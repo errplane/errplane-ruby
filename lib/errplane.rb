@@ -19,7 +19,7 @@ require "errplane/rack"
 require "errplane/railtie" #if defined?(Rails)
 
 module Errplane
-  API_HOST = "api.errz.co"
+  API_HOST = "api.errplane.com"
 
   class << self
     attr_writer :configuration
