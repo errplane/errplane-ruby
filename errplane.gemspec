@@ -6,10 +6,10 @@ Gem::Specification.new do |s|
   s.name        = "errplane"
   s.version     = Errplane::VERSION
   s.authors     = ["Todd Persen"]
-  s.email       = ["todd.persen@gmail.com"]
-  s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.email       = ["todd@errplane.com"]
+  s.homepage    = "http://errplane.com"
+  s.summary     = %q{Rails exception reporting for Errplane.}
+  s.description = %q{This gem provides exception reporting with Errplane for Rails 3.x applications.}
 
   s.rubyforge_project = "errplane"
 
