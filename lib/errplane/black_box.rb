@@ -10,7 +10,7 @@ module Errplane
       {
         :time => Time.now.to_i,
         :message => @exception.message,
-        :backtrace => @exception.backtrace.to_json
+        :backtrace => @exception.backtrace
       }.to_json
     end
   end
