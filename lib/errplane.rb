@@ -37,8 +37,7 @@ module Errplane
     end
 
     def ignorable_exception?(exception)
-      #configuration.ignore_current_environment? ||
-      return configuration.ignored_exceptions.include?(exception.class.to_s)
+      configuration.ignore_current_environment? || configuration.ignored_exceptions.include?(exception.class.to_s)
     end
 
     private

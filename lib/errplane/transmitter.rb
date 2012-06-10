@@ -7,9 +7,9 @@ module Errplane
       http = initialize_http_connection
       data = black_box.to_json
       response = begin
-                   url = "/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/#{Errplane.configuration.environment_name}?api_key=#{Errplane.configuration.api_key}"
+                   url = "/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/#{Errplane.configuration.rails_environment}?api_key=#{Errplane.configuration.api_key}"
                    ::Rails.logger.info(url)
-                   http.post("/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/#{Errplane.configuration.environment_name}?api_key=#{Errplane.configuration.api_key}", data)
+                   http.post("/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/#{Errplane.configuration.rails_environment}?api_key=#{Errplane.configuration.api_key}", data)
                  rescue Exception => e
                    e
                  end

@@ -12,10 +12,10 @@ module Errplane
 
     config.after_initialize do
       Errplane.configure(true) do |config|
-        config.logger           ||= ::Rails.logger
-        config.environment_name ||= ::Rails.env
-        config.project_root     ||= ::Rails.root
-        config.framework        = "Rails: #{::Rails::VERSION::STRING}"
+        config.logger            ||= ::Rails.logger
+        config.rails_environment ||= ::Rails.env
+        config.rails_root        ||= ::Rails.root
+        config.framework           = "Rails #{::Rails::VERSION::STRING}"
       end
 
       if defined?(::ActionDispatch::DebugExceptions)
