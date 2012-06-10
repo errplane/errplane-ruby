@@ -27,7 +27,7 @@ module Errplane
 
     private
     def initialize_http_connection
-      connection = Net::HTTP.new(API_HOST, "80")
+      connection = Net::HTTP.new(Errplane.configuration.api_host, "80")
     end
   end
 end

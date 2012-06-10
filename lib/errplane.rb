@@ -19,8 +19,6 @@ require "errplane/rack"
 require "errplane/railtie" #if defined?(Rails)
 
 module Errplane
-  API_HOST = "api.errplane.com"
-
   class << self
     attr_writer :configuration
     attr_accessor :transmitter
@@ -39,6 +37,7 @@ module Errplane
     end
 
     def ignorable_exception?(exception)
+      #configuration.ignore_current_environment? ||
       return configuration.ignored_exceptions.include?(exception.class.to_s)
     end
 
