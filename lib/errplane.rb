@@ -35,7 +35,11 @@ module Errplane
     end
 
     def transmit_to_api(exception)
-      transmitter.relay(assemble_black_box_for(exception))
+      transmitter.relay(assemble_black_box_for(exception)) unless ignorable_exception?(exception)
+    end
+
+    def ignorable_exception?(exception)
+      return configuration.ignored_exceptions.include?(exception.class.to_s)
     end
 
     private
