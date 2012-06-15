@@ -6,9 +6,10 @@ module Errplane
           base.send(:alias_method_chain,:render_exception,:errplane)
         end
 
-        def render_exception_with_errplane(env,exception)
-          Errplane.transmit_to_api(exception)
-          render_exception_without_errplane(env,exception)
+        def render_exception_with_errplane(env, e)
+          controller = env['action_controller.instance']
+          Errplane.transmit_to_api(e, env)
+          render_exception_without_errplane(env, e)
         end
       end
     end

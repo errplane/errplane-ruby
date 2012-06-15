@@ -8,22 +8,27 @@ module Errplane
     attr_accessor :rails_environment
     attr_accessor :rails_root
     attr_accessor :framework
+    attr_accessor :framework_version
+    attr_accessor :language
+    attr_accessor :language_version
     attr_accessor :ignored_exceptions
     attr_accessor :ignored_environments
 
-    DEFAULT_API_HOST = "api.errplane.com"
-    DEFAULT_IGNORED_EXCEPTIONS = %w{ActiveRecord::RecordNotFound
-                                    ActionController::RoutingError}
-    DEFAULT_IGNORED_ENVIRONMENTS = %w{development test cucumber selenium}
+    DEFAULTS = {
+      :api_host => "api.errplane.com",
+      :ignored_exceptions => %w{ActiveRecord::RecordNotFound
+                                ActionController::RoutingError},
+      :ignored_environments => %w{development test cucumber selenium}
+    }
 
     def initialize
-      @api_host = DEFAULT_API_HOST
-      @ignored_exceptions = DEFAULT_IGNORED_EXCEPTIONS.dup
-      @ignored_environments = DEFAULT_IGNORED_ENVIRONMENTS.dup
+      @api_host = DEFAULTS[:api_host]
+      @ignored_exceptions = DEFAULTS[:ignored_exceptions].dup
+      @ignored_environments = DEFAULTS[:ignored_environments].dup
     end
 
     def ignore_current_environment?
-      return self.ignored_environments.include?(self.rails_environment)
+      self.ignored_environments.include?(self.rails_environment)
     end
   end
 end

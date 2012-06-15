@@ -8,8 +8,8 @@ module Errplane
       begin
         response = @app.call(env)
       rescue => e
-        Errplane.transmit_to_api(e)
-        raise
+        Errplane.transmit_to_api(e, env)
+        raise(e)
       end
 
       response

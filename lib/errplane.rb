@@ -16,7 +16,8 @@ require "errplane/configuration"
 require "errplane/transmitter"
 require "errplane/rack"
 
-require "errplane/railtie" #if defined?(Rails)
+require "errplane/railtie" #if defined? Rails::Railtie
+require "errplane/sinatra" if defined? Sinatra::Request
 
 module Errplane
   class << self
@@ -32,27 +33,34 @@ module Errplane
       @configuration ||= Configuration.new
     end
 
-    def transmit_to_api(exception)
-      transmitter.relay(assemble_black_box_for(exception)) unless ignorable_exception?(exception)
+    def transmit_to_api(e, env)
+      begin
+      ::Rails.logger.info("\nTransmitter: #{transmitter.inspect}")
+      ::Rails.logger.info("\nBlack Box: #{assemble_black_box_for(e).inspect}")
+      ::Rails.logger.info("\nIgnorable Exception? #{ignorable_exception?(e)}")
+      transmitter.relay(assemble_black_box_for(e)) unless ignorable_exception?(e)
+      rescue
+        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off.")
+      end
     end
 
-    def ignorable_exception?(exception)
-      configuration.ignore_current_environment? || configuration.ignored_exceptions.include?(exception.class.to_s)
+    def ignorable_exception?(e)
+      configuration.ignore_current_environment? || configuration.ignored_exceptions.include?(e.class.to_s)
     end
 
     private
-    def assemble_black_box_for(exception, options = {})
-      exception = unwrap_exception(exception)
+    def assemble_black_box_for(e, options = {})
+      exception = unwrap_exception(e)
       black_box = BlackBox.new(exception: exception)
     end
 
-    def unwrap_exception(exception)
-      if exception.respond_to?(:original_exception)
-        exception.original_exception
-      elsif exception.respond_to?(:continued_exception)
-        exception.continued_exception
+    def unwrap_exception(e)
+      if e.respond_to?(:original_exception)
+        e.original_exception
+      elsif e.respond_to?(:continued_exception)
+        e.continued_exception
       else
-        exception
+        e
       end
     end
   end

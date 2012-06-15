@@ -8,14 +8,14 @@ module Errplane
       data = black_box.to_json
       response = begin
                    url = "/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/#{Errplane.configuration.rails_environment}?api_key=#{Errplane.configuration.api_key}"
-                   ::Rails.logger.info(url)
-                   http.post("/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/#{Errplane.configuration.rails_environment}?api_key=#{Errplane.configuration.api_key}", data)
+                   ::Rails.logger.info("\nURL: #{url}")
+                   ::Rails.logger.info("\nData: #{data.inspect}")
+                   response = http.post(url, data)
+                   ::Rails.logger.info("\nException Response: #{response.inspect}")
+                   response
                  rescue Exception => e
-                   e
+                   # e
                  end
-      ::Rails.logger.info("Exception Data: #{data}")
-      ::Rails.logger.info("Exception Body: #{response.body}")
-      ::Rails.logger.info("Exception Response: #{response.inspect}")
 
       case response
       when Net::HTTPSuccess
