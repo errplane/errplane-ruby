@@ -15,18 +15,10 @@ module Errplane
         config.logger            ||= ::Rails.logger
         config.rails_environment ||= ::Rails.env
         config.rails_root        ||= ::Rails.root
-<<<<<<< HEAD
-        config.framework           = "Rails #{::Rails::VERSION::STRING}"
-=======
-<<<<<<< HEAD
-        config.framework           = "Rails #{::Rails::VERSION::STRING}"
-=======
         config.framework           = "Rails"
         config.framework_version   = ::Rails::VERSION::STRING
         config.language            = "Ruby"
         config.language_version    = RUBY_VERSION
->>>>>>> Add more configurability and some initial Sinatra support. Also add some Rails logging for debugging purposes.
->>>>>>> Add more configurability and some initial Sinatra support. Also add some Rails logging for debugging purposes.
       end
 
       if defined?(::ActionDispatch::DebugExceptions)
