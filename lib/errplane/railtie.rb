@@ -4,6 +4,38 @@ require 'rails'
 module Errplane
   class Railtie < ::Rails::Railtie
     rake_tasks do
+      namespace :errplane do
+        task :test => :environment do
+          if Errplane.configuration.api_key.nil?
+            puts "Hey, you need to define an API key first. Run `rails g errplane <api-key>` if you didn't already."
+            exit
+          end
+
+          Errplane.configure do |config|
+            config.ignored_environments = []
+          end
+
+          class ::ErrplaneSampleException < Exception; end;
+
+          puts "Setting up ApplicationController.."
+          class ::ApplicationController < ::ActionController::Base
+            def test_action
+              raise ::ErrplaneSampleException.new("If you see this, Errplane is working.")
+            end
+          end
+
+          ::Rails.application.routes_reloader.execute_if_updated
+          ::Rails.application.routes.draw do
+            match 'generate_sample_exception' => 'application#test_action'
+          end
+
+          puts "Generating sample request.."
+          env = ::Rack::MockRequest.env_for("/generate_sample_exception")
+          ::Rails.application.call(env)
+
+          puts "Done. Check your email or http://errplane.com for the exception notice."
+        end
+      end
     end
 
     initializer "errplane.insert_rack_middleware" do |app|
