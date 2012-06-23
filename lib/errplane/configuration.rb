@@ -3,6 +3,7 @@ module Errplane
     attr_accessor :api_key
     attr_accessor :api_host
     attr_accessor :application_id
+    attr_accessor :application_name
 
     attr_accessor :logger
     attr_accessor :rails_environment
@@ -13,6 +14,7 @@ module Errplane
     attr_accessor :language_version
     attr_accessor :ignored_exceptions
     attr_accessor :ignored_environments
+    attr_accessor :environment_variables
 
     DEFAULTS = {
       :api_host => "api.errplane.com",

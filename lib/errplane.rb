@@ -36,8 +36,9 @@ module Errplane
     def transmit_to_api(e, env)
       begin
       ::Rails.logger.info("\nTransmitter: #{transmitter.inspect}")
-      ::Rails.logger.info("\nBlack Box: #{assemble_black_box_for(e).inspect}")
+      ::Rails.logger.info("\nBlack Box: #{assemble_black_box_for(e).to_json}")
       ::Rails.logger.info("\nIgnorable Exception? #{ignorable_exception?(e)}")
+      ::Rails.logger.info("\nEnvironment: #{ENV.to_hash}")
       transmitter.relay(assemble_black_box_for(e)) unless ignorable_exception?(e)
       rescue
         configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off.")
