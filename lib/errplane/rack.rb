@@ -8,7 +8,7 @@ module Errplane
       begin
         response = @app.call(env)
       rescue => e
-        Errplane.transmit_to_api(e, env)
+        Errplane.transmit_unless_ignorable(e, env)
         raise(e)
       end
 

@@ -7,6 +7,6 @@
 # end
 
 error do
-  Errplane.transmit_to_api(request.env['sinatra.error'], request.env)
+  Errplane.transmit_unless_ignorable(request.env['sinatra.error'], request.env)
   raise request.env['sinatra.error']
 end
