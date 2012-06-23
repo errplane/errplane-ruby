@@ -48,7 +48,12 @@ module Errplane
 
     def transmit(e)
       begin
-        black_box = assemble_black_box_for(e)
+        black_box = if e.is_a?(String)
+          assemble_black_box_for(Exception.new(e))
+        else
+          assemble_black_box_for(e)
+        end
+
         ::Rails.logger.info("\nTransmitter: #{transmitter.inspect}")
         ::Rails.logger.info("\nBlack Box: #{black_box.to_json}")
         ::Rails.logger.info("\nIgnorable Exception? #{ignorable_exception?(e)}")
