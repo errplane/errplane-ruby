@@ -10,7 +10,7 @@ module Errplane
       {
         :time => Time.now.to_i,
         :message => @exception.message,
-        :backtrace => @exception.backtrace,
+        :backtrace => @exception.backtrace || [],
         :exception_class => @exception.class.to_s,
         :application_name => Errplane.configuration.application_name,
         :rails_root => Errplane.configuration.rails_root,
