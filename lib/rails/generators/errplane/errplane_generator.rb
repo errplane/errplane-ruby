@@ -1,4 +1,5 @@
 require 'rails/generators'
+require 'active_support/secure_random'
 
 class ErrplaneGenerator < Rails::Generators::Base
   desc "Description:\n  This creates a Rails initializer for Errplane."
