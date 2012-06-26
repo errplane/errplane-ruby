@@ -17,20 +17,26 @@ module Errplane
 
           class ::ErrplaneSampleException < Exception; end;
 
+          require ::Rails.root.join("app/controllers/application_controller.rb")
+
           puts "Setting up ApplicationController.."
-          class ::ApplicationController < ::ActionController::Base
-            def test_action
+          class ::ApplicationController
+            prepend_before_filter :raise_sample_exception
+
+            def raise_sample_exception
               raise ::ErrplaneSampleException.new("If you see this, Errplane is working.")
             end
+
+            def errplane_dummy_action; end
           end
 
           ::Rails.application.routes_reloader.execute_if_updated
           ::Rails.application.routes.draw do
-            match 'generate_sample_exception' => 'application#test_action'
+            match "errplane_test" => 'application#errplane_dummy_action'
           end
 
           puts "Generating sample request.."
-          env = ::Rack::MockRequest.env_for("/generate_sample_exception")
+          env = ::Rack::MockRequest.env_for("/errplane_test")
           ::Rails.application.call(env)
 
           puts "Done. Check your email or http://errplane.com for the exception notice."
