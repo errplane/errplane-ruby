@@ -63,10 +63,10 @@ module Errplane
 
       if defined?(::ActionDispatch::DebugExceptions)
         require 'errplane/rails/middleware/hijack_render_exception'
-        ::ActionDispatch::DebugExceptions.send(:include,Errplane::Rails::Middleware::HijackRenderException)
+        ::ActionDispatch::DebugExceptions.send(:include, Errplane::Rails::Middleware::HijackRenderException)
       elsif defined?(::ActionDispatch::ShowExceptions)
         require 'errplane/rails/middleware/hijack_render_exception'
-        ::ActionDispatch::ShowExceptions.send(:include,Errplane::Rails::Middleware::HijackRenderException)
+        ::ActionDispatch::ShowExceptions.send(:include, Errplane::Rails::Middleware::HijackRenderException)
       end
     end
   end

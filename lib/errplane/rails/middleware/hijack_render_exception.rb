@@ -3,7 +3,7 @@ module Errplane
     module Middleware
       module HijackRenderException
         def self.included(base)
-          base.send(:alias_method_chain,:render_exception,:errplane)
+          base.send(:alias_method_chain, :render_exception, :errplane)
         end
 
         def render_exception_with_errplane(env, e)

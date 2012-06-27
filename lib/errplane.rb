@@ -71,7 +71,7 @@ module Errplane
     private
     def assemble_black_box_for(e, options = {})
       exception = unwrap_exception(e)
-      black_box = BlackBox.new(exception: exception)
+      black_box = BlackBox.new(:exception => exception)
     end
 
     def unwrap_exception(e)
