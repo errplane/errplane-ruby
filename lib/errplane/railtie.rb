@@ -37,9 +37,26 @@ module Errplane
 
           puts "Generating sample request.."
           env = ::Rack::MockRequest.env_for("/errplane_test")
-          ::Rails.application.call(env)
 
-          puts "Done. Check your email or http://errplane.com for the exception notice."
+          puts "Attempting to raise exception via HTTP.."
+          response = ::Rails.application.call(env)
+
+          if response.try(:first) == 500
+            puts "Done. Check your email or http://errplane.com for the exception notice."
+          else
+            puts "Request failed: #{response}"
+
+            env["HTTPS"] = "on"
+            puts "Attempting to raise exception via HTTPS.."
+            response = ::Rails.application.call(env)
+
+            if response.try(:first) == 500
+              puts "Done. Check your email or http://errplane.com for the exception notice."
+            else
+              puts "Request failed: #{response}"
+              puts "We didn't get the exception we were expecting. Contact support@errplane.com and send them all of this output."
+            end
+          end
         end
       end
     end
