@@ -36,10 +36,11 @@ module Errplane
     def transmit_unless_ignorable(e, env)
       begin
         black_box = assemble_black_box_for(e)
-        ::Rails.logger.info("\nTransmitter: #{transmitter.inspect}")
-        ::Rails.logger.info("\nBlack Box: #{black_box.to_json}")
-        ::Rails.logger.info("\nIgnorable Exception? #{ignorable_exception?(e)}")
-        ::Rails.logger.info("\nEnvironment: #{ENV.to_hash}")
+        configuration.logger.info("\nTransmitter: #{transmitter.inspect}") if configuration.debug?
+        configuration.logger.info("\nBlack Box: #{black_box.to_json}") if configuration.debug?
+        configuration.logger.info("\nIgnorable Exception? #{ignorable_exception?(e)}") if configuration.debug?
+        configuration.logger.info("\nEnvironment: #{ENV.to_hash}") if configuration.debug?
+
         transmitter.relay(black_box) unless ignorable_exception?(e)
       rescue
         configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off.")
@@ -54,10 +55,10 @@ module Errplane
           assemble_black_box_for(e)
         end
 
-        ::Rails.logger.info("\nTransmitter: #{transmitter.inspect}")
-        ::Rails.logger.info("\nBlack Box: #{black_box.to_json}")
-        ::Rails.logger.info("\nIgnorable Exception? #{ignorable_exception?(e)}")
-        ::Rails.logger.info("\nEnvironment: #{ENV.to_hash}")
+        configuration.logger.info("\nTransmitter: #{transmitter.inspect}") if configuration.debug?
+        configuration.logger.info("\nBlack Box: #{black_box.to_json}") if configuration.debug?
+        configuration.logger.info("\nIgnorable Exception? #{ignorable_exception?(e)}") if configuration.debug?
+        configuration.logger.info("\nEnvironment: #{ENV.to_hash}") if configuration.debug?
         transmitter.relay(black_box)
       rescue
         configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off.")

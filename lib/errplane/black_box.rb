@@ -9,16 +9,16 @@ module Errplane
     def to_json
       {
         :time => Time.now.to_i,
+        :application_name => Errplane.configuration.application_name,
+        :application_root => Errplane.configuration.application_root,
+        :framework => Errplane.configuration.framework,
+        :framework_version => Errplane.configuration.framework_version,
         :message => @exception.message,
         :backtrace => @exception.backtrace || [],
         :exception_class => @exception.class.to_s,
-        :application_name => Errplane.configuration.application_name,
-        :rails_root => Errplane.configuration.rails_root,
-        :language => Errplane.configuration.language,
-        :language_version => Errplane.configuration.language_version,
-        :framework => Errplane.configuration.framework,
-        :framework_version => Errplane.configuration.framework_version,
-        :environment_variables => Errplane.configuration.environment_variables.to_hash,
+        :language => "Ruby",
+        :language_version => "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}",
+        :environment_variables => ENV.to_hash
       }.to_json
     end
   end

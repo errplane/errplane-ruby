@@ -69,13 +69,10 @@ module Errplane
       Errplane.configure(true) do |config|
         config.logger                ||= ::Rails.logger
         config.rails_environment     ||= ::Rails.env
-        config.rails_root            ||= ::Rails.root
+        config.application_root      ||= ::Rails.root
         config.application_name      ||= ::Rails.application.class.parent_name
         config.framework               = "Rails"
         config.framework_version       = ::Rails::VERSION::STRING
-        config.language                = "Ruby"
-        config.language_version        = "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}"
-        config.environment_variables   = ENV.to_hash
       end
 
       if defined?(::ActionDispatch::DebugExceptions)

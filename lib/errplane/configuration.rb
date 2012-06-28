@@ -4,10 +4,10 @@ module Errplane
     attr_accessor :api_host
     attr_accessor :application_id
     attr_accessor :application_name
+    attr_accessor :application_root
 
     attr_accessor :logger
     attr_accessor :rails_environment
-    attr_accessor :rails_root
     attr_accessor :framework
     attr_accessor :framework_version
     attr_accessor :language
@@ -15,6 +15,8 @@ module Errplane
     attr_accessor :ignored_exceptions
     attr_accessor :ignored_environments
     attr_accessor :environment_variables
+
+    attr_accessor :debug
 
     DEFAULTS = {
       :api_host => "api.errplane.com",
@@ -27,6 +29,11 @@ module Errplane
       @api_host = DEFAULTS[:api_host]
       @ignored_exceptions = DEFAULTS[:ignored_exceptions].dup
       @ignored_environments = DEFAULTS[:ignored_environments].dup
+      @debug = false
+    end
+
+    def debug?
+      !!@debug
     end
 
     def ignore_current_environment?
