@@ -75,6 +75,11 @@ module Errplane
         config.framework_version       = ::Rails::VERSION::STRING
       end
 
+      ActiveSupport.on_load(:action_controller) do
+        require 'errplane/rails/air_traffic_controller'
+        include Errplane::Rails::AirTrafficController
+      end
+
       if defined?(::ActionDispatch::DebugExceptions)
         require 'errplane/rails/middleware/hijack_render_exception'
         ::ActionDispatch::DebugExceptions.send(:include, Errplane::Rails::Middleware::HijackRenderException)

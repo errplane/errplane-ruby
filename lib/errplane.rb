@@ -35,7 +35,7 @@ module Errplane
 
     def transmit_unless_ignorable(e, env)
       begin
-        black_box = assemble_black_box_for(e)
+        black_box = assemble_black_box_for(e, env)
         configuration.logger.info("\nTransmitter: #{transmitter.inspect}") if configuration.debug?
         configuration.logger.info("\nBlack Box: #{black_box.to_json}") if configuration.debug?
         configuration.logger.info("\nIgnorable Exception? #{ignorable_exception?(e)}") if configuration.debug?
@@ -70,19 +70,12 @@ module Errplane
     end
 
     private
-    def assemble_black_box_for(e, options = {})
-      exception = unwrap_exception(e)
-      black_box = BlackBox.new(:exception => exception)
-    end
-
-    def unwrap_exception(e)
-      if e.respond_to?(:original_exception)
-        e.original_exception
-      elsif e.respond_to?(:continued_exception)
-        e.continued_exception
-      else
-        e
-      end
+    def assemble_black_box_for(e, opts = {})
+      configuration.logger.info("OPTS: #{opts}")
+      e = e.continued_exception if e.respond_to?(:continued_exception)
+      e = e.original_exception if e.respond_to?(:original_exception)
+      opts = opts.merge(:exception => e)
+      black_box = BlackBox.new(opts)
     end
   end
 end

@@ -7,8 +7,10 @@ module Errplane
         end
 
         def render_exception_with_errplane(env, e)
-          controller = env['action_controller.instance']
-          Errplane.transmit_unless_ignorable(e, env)
+          controller = env["action_controller.instance"]
+          Errplane.configuration.logger.info("Controller: #{controller}")
+          Errplane.configuration.logger.info("Request Data: #{controller.try(:errplane_request_data)}")
+          Errplane.transmit_unless_ignorable(e, controller.try(:errplane_request_data))
           render_exception_without_errplane(env, e)
         end
       end

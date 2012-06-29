@@ -1,9 +1,19 @@
 module Errplane
   class BlackBox
     attr_reader :exception
+    attr_reader :params
+    attr_reader :session_data
+    attr_reader :controller
+    attr_reader :action
+    attr_reader :request_url
 
     def initialize(params = {})
       @exception = params[:exception]
+      @params = params[:params] || {}
+      @session_data = params[:session_data] || {}
+      @controller = params[:controller]
+      @action = params[:action]
+      @request_url = params[:request_url]
     end
 
     def to_json
@@ -18,8 +28,28 @@ module Errplane
         :exception_class => @exception.class.to_s,
         :language => "Ruby",
         :language_version => "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}",
-        :environment_variables => ENV.to_hash
+        :environment_variables => ENV.to_hash,
+        :reporter => reporter,
+        :request_data => request_data
       }.to_json
+    end
+
+    def reporter
+      {
+        :name => "Errplane",
+        :version => Errplane::VERSION,
+        :url => "http://github.com/errplane/gem"
+      }
+    end
+
+    def request_data
+      {
+        :params => @params,
+        :session_data => @session_data,
+        :controller => @controller,
+        :action => @action,
+        :request_url => @request_url
+      }
     end
   end
 end
