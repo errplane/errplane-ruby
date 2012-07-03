@@ -6,6 +6,7 @@ module Errplane
     attr_reader :controller
     attr_reader :action
     attr_reader :request_url
+    attr_reader :custom_data
 
     def initialize(params = {})
       @exception = params[:exception]
@@ -14,6 +15,7 @@ module Errplane
       @controller = params[:controller]
       @action = params[:action]
       @request_url = params[:request_url]
+      @custom_data = params[:custom_data] || {}
     end
 
     def to_json
@@ -30,7 +32,8 @@ module Errplane
         :language_version => "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}",
         :environment_variables => ENV.to_hash,
         :reporter => reporter,
-        :request_data => request_data
+        :request_data => request_data,
+        :custom_data => @custom_data
       }.to_json
     end
 

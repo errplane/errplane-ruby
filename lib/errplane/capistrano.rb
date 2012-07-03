@@ -10,14 +10,16 @@ Capistrano::Configuration.instance(:must_exist).load do
       puts "Notifying Errplane of the deployment.."
       framework_env = fetch(:rails_env, fetch(:errplane_env, 'production'))
       load File.join(Dir.pwd, "config/initializers/errplane.rb")
+      Errplane.configuration.rails_environment = framework_env
 
       deploy_options = {
-        :framework_env => framework_env,
-        :scm_revision => current_revision,
-        :scm_repository => repository,
-        :api_key => Errplane.configuration.api_key
+        :environment => framework_env,
+        :revision => current_revision,
+        :repository => repository,
+        :scm => scm,
+        :host => host
       }
-      Errplane::Deployment.new.announce!(deploy_options)
+      Errplane::Transmitter.new.relay(deploy_options, true)
       puts 'Done.'
     end
   end
