@@ -6,13 +6,12 @@ module Errplane
      
       @syslog_p = SyslogProto::Packet.new
 
-      local_hostname   = options[:local_hostname] || (Socket.gethostname rescue `hostname`.chomp)
+      local_hostname   = (Socket.gethostname rescue `hostname`.chomp)
       local_hostname   = 'localhost' if local_hostname.nil? || local_hostname.empty?
       @syslog_p.hostname = local_hostname
 
       @syslog_p.facility =  'user'
       @syslog_p.severity = 'notice'
-      @syslog_p.tag      = Errplane.configuration.application_name
       @udpsocket = UDPSocket.new
     end
     
@@ -20,10 +19,12 @@ module Errplane
       message.split(/\r?\n/).each do |line|
         begin
           next if line =~ /^\s*$/
-          packet = @packet.dup
-          packet.content = line
-          @socket.send(packet.assemble, 0, @remote_hostname, @remote_port)
-        rescue
+          pak = @syslog_p.dup
+          pak.msg = line
+          @udpsocket.send(pak.assemble, 0, @host, @port)
+        rescue => e
+          puts e
+          puts e.backtrace
         	#ignore errors
         end
       end
@@ -42,9 +43,10 @@ begin
 		require 'errplane/syslogproto'
 
 		puts "Setting up Errplane remote logger on port -#{Errplane.configuration.syslogd_port}"
-		logger = UdpLogger.new( Errplane.configuration.syslogd_port.to_i)
+		logger = Logger.new(Errplane::UdpLogger.new( Errplane.configuration.syslogd_port.to_i))
 		logger.level = Logger::INFO
 
+    logger.error "TEST"
 		Rails.logger = Rails.application.config.logger = ActionController::Base.logger = Rails.cache.logger = logger
 	end
 rescue => e
