@@ -46,12 +46,7 @@ This gem also supports notifications from failed Resque jobs. Just add the follo
     require 'resque/failure/redis'
     require 'errplane/resque'
 
-    Resque::Failure::Errplane.configure do |config|
-      config.api_key = 'your-api-key-goes-here'
-      config.application_id = 'your_app_id'
-    end
-
-    Resque::Failure::Multiple::Classes = [Resque::Failure::Redis, Resque::Failure::Errplane]
+    Resque::Failure::Multiple.classes = [Resque::Failure::Redis, Resque::Failure::Errplane]
     Resque::Failure.backend = Resque::Failure::Multiple
 
 Don't forget that you can refer to `config/initializers/errplane.rb` for the relevant configuration values.
