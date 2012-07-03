@@ -38,7 +38,7 @@ module Errplane
       {
         :name => "Errplane",
         :version => Errplane::VERSION,
-        :url => "http://github.com/errplane/gem"
+        :url => "https://github.com/errplane/gem"
       }
     end
 
