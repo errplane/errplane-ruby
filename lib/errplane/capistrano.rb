@@ -26,8 +26,8 @@ Capistrano::Configuration.instance(:must_exist).load do
         :host => host,
         :remote_user => (user rescue nil),
         :local_user => deploying_user,
-        :local_user_name => deploying_user_name,
-        :local_user_email => deploying_user_email
+        :scm_user_name => deploying_user_name,
+        :scm_user_email => deploying_user_email
       }
 
       Errplane::Transmitter.new.relay(deploy_options, true)
