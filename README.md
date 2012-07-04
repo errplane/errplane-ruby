@@ -40,7 +40,7 @@ This will automatically pull your API key from the Rails initializer and notify 
 Resque Integration With Multiple Failure Backends
 -------------------------------------------------
 
-This gem also supports notifications from failed Resque jobs. Just add the following to the an initializer:
+This gem also supports notifications from failed Resque jobs. Just add the following to the an initializer, such as `config/initializers/resque.rb`:
 
     require 'resque/failure/multiple'
     require 'resque/failure/redis'
@@ -49,7 +49,7 @@ This gem also supports notifications from failed Resque jobs. Just add the follo
     Resque::Failure::Multiple.classes = [Resque::Failure::Redis, Resque::Failure::Errplane]
     Resque::Failure.backend = Resque::Failure::Multiple
 
-Don't forget that you can refer to `config/initializers/errplane.rb` for the relevant configuration values.
+Assuming this is running from within a normal Rails projects, the values provided in `config/initializers/errplane.rb` will make sure that the Resque backend is set up correctly.
 
 Contributing
 ------------
