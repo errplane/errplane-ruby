@@ -11,7 +11,7 @@ module Resque
         ::Errplane.transmit_unless_ignorable(exception, :custom_data => {
           :resque => {
             :payload => payload,
-            :worker => worker,
+            :worker => worker.to_s,
             :queue => queue
           }
         })
