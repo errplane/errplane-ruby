@@ -11,7 +11,7 @@ module Errplane
             exit
           end
 
-          Errplane.configuration.syslogd_port =  Errplane.configuration.get_logport(application_id)
+          Errplane.configuration.syslogd_port =  Errplane.configuration.get_logport
           if(Errplane.configuration.syslogd_port && Errplane.configuration.syslogd_port.to_s != "") 
             require 'errplane/rails/udp_logger'
           end
