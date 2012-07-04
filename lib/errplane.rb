@@ -43,7 +43,7 @@ module Errplane
 
         transmitter.relay(black_box) unless ignorable_exception?(e)
       rescue => e
-        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off. -" + e.inspect)
+        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off. -" + e.inspect + e.backtrace)
       end
     end
 
@@ -61,7 +61,7 @@ module Errplane
         configuration.logger.info("\nEnvironment: #{ENV.to_hash}") if configuration.debug?
         transmitter.relay(black_box)
       rescue => e
-        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off. -" + e.inspect)
+        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off. -" + e.inspect + e.backtrace)
       end
     end
 
