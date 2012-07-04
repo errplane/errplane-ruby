@@ -13,6 +13,7 @@ module Errplane
       @syslog_p.facility =  'user'
       @syslog_p.severity = 'notice'
       @udpsocket = UDPSocket.new
+      puts "Setting up Errplane remote logger on port -#{@host}:#{@port}"
     end
     
     def write(message)
@@ -42,7 +43,6 @@ begin
 		require 'socket'
 		require 'errplane/syslogproto'
 
-		puts "Setting up Errplane remote logger on port -#{Errplane.configuration.syslogd_port}"
 		logger = Logger.new(Errplane::UdpLogger.new( Errplane.configuration.syslogd_port.to_i))
 		logger.level = Logger::INFO
 
