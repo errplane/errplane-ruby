@@ -51,6 +51,13 @@ This gem also supports notifications from failed Resque jobs. Just add the follo
 
 Assuming this is running from within a normal Rails projects, the values provided in `config/initializers/errplane.rb` will make sure that the Resque backend is set up correctly.
 
+Rails Remote Logger
+-------------------
+
+This gem supports remotely sending rails logs to Errplane to be alerted and monitored in our web console. To use this, run the generator above and uncomment the following line in `config/initializers/errplane.rb`.
+
+    # config.syslogd_port = "<port here>"
+
 Contributing
 ------------
 
