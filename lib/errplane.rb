@@ -71,6 +71,7 @@ module Errplane
 
     private
     def assemble_black_box_for(e, opts = {})
+      opts ||= {}
       configuration.logger.info("OPTS: #{opts}")
       e = e.continued_exception if e.respond_to?(:continued_exception)
       e = e.original_exception if e.respond_to?(:original_exception)
