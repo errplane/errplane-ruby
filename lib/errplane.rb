@@ -16,7 +16,7 @@ require "errplane/configuration"
 require "errplane/transmitter"
 require "errplane/rack"
 
-require "errplane/railtie" #if defined? Rails::Railtie
+require "errplane/railtie" if defined? Rails::Railtie
 require "errplane/sinatra" if defined? Sinatra::Request
 
 module Errplane
