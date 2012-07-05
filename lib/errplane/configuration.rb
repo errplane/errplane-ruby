@@ -2,9 +2,11 @@ module Errplane
   class Configuration
     attr_accessor :api_key
     attr_accessor :api_host
+    attr_accessor :app_host
     attr_accessor :application_id
     attr_accessor :application_name
     attr_accessor :application_root
+    attr_accessor :syslogd_port
 
     attr_accessor :logger
     attr_accessor :rails_environment
@@ -20,6 +22,7 @@ module Errplane
 
     DEFAULTS = {
       :api_host => "api.errplane.com",
+      :app_host => "app.errplane.com",
       :ignored_exceptions => %w{ActiveRecord::RecordNotFound
                                 ActionController::RoutingError},
       :ignored_environments => %w{development test cucumber selenium}
@@ -27,6 +30,7 @@ module Errplane
 
     def initialize
       @api_host = DEFAULTS[:api_host]
+      @app_host = DEFAULTS[:app_host]
       @ignored_exceptions = DEFAULTS[:ignored_exceptions].dup
       @ignored_environments = DEFAULTS[:ignored_environments].dup
       @debug = false
@@ -38,6 +42,32 @@ module Errplane
 
     def ignore_current_environment?
       self.ignored_environments.include?(self.rails_environment)
+    end
+
+    def get_logport
+      puts "Acquiring port information from errplane"
+      http = initialize_http_connection
+      response = begin
+                   url = "/api/v1/syslogds.txt?api_key=#{@api_key}"
+                   http.get(url)
+                 rescue Exception => e
+                   puts e
+                 end
+
+
+      case response
+      when Net::HTTPSuccess
+        # Success
+        response.body
+      else
+        # Failure
+        ""
+      end
+    end
+
+    private
+    def initialize_http_connection
+      Net::HTTP.new(@app_host, "80")
     end
   end
 end

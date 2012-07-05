@@ -11,6 +11,11 @@ module Errplane
             exit
           end
 
+          Errplane.configuration.syslogd_port =  Errplane.configuration.get_logport
+          if(Errplane.configuration.syslogd_port && Errplane.configuration.syslogd_port.to_s != "") 
+            require 'errplane/rails/udp_logger'
+          end
+
           Errplane.configure do |config|
             config.ignored_environments = []
           end
@@ -73,6 +78,10 @@ module Errplane
         config.application_name      ||= ::Rails.application.class.parent_name
         config.framework               = "Rails"
         config.framework_version       = ::Rails::VERSION::STRING
+      end
+
+      if(Errplane.configuration.syslogd_port && Errplane.configuration.syslogd_port.to_s != "") 
+        require 'errplane/rails/udp_logger'
       end
 
       ActiveSupport.on_load(:action_controller) do

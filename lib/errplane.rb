@@ -42,8 +42,8 @@ module Errplane
         configuration.logger.info("\nEnvironment: #{ENV.to_hash}") if configuration.debug?
 
         transmitter.relay(black_box) unless ignorable_exception?(e)
-      rescue
-        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off.")
+      rescue => e
+        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off. 2-" + e.inspect)
       end
     end
 
@@ -60,8 +60,8 @@ module Errplane
         configuration.logger.info("\nIgnorable Exception? #{ignorable_exception?(e)}") if configuration.debug?
         configuration.logger.info("\nEnvironment: #{ENV.to_hash}") if configuration.debug?
         transmitter.relay(black_box)
-      rescue
-        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off.")
+      rescue => e
+        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off. 1-" + e.inspect)
       end
     end
 
@@ -71,6 +71,7 @@ module Errplane
 
     private
     def assemble_black_box_for(e, opts = {})
+      opts ||= {}
       configuration.logger.info("OPTS: #{opts}")
       e = e.continued_exception if e.respond_to?(:continued_exception)
       e = e.original_exception if e.respond_to?(:original_exception)
