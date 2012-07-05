@@ -47,12 +47,12 @@ module Errplane
       end
     end
 
-    def transmit(e)
+    def transmit(e, env = {})
       begin
         black_box = if e.is_a?(String)
-          assemble_black_box_for(Exception.new(e))
+          assemble_black_box_for(Exception.new(e), env)
         else
-          assemble_black_box_for(e)
+          assemble_black_box_for(e, env)
         end
 
         configuration.logger.info("\nTransmitter: #{transmitter.inspect}") if configuration.debug?
