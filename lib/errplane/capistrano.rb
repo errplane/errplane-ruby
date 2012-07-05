@@ -22,6 +22,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         :environment => framework_env,
         :revision => current_revision,
         :repository => repository,
+        :branch => (branch rescue nil),
         :scm => scm,
         :host => host,
         :remote_user => (user rescue nil),
