@@ -51,6 +51,13 @@ This gem also supports notifications from failed Resque jobs. Just add the follo
 
 Assuming this is running from within a normal Rails projects, the values provided in `config/initializers/errplane.rb` will make sure that the Resque backend is set up correctly.
 
+Chef Support
+------------
+
+We currently only support Exception notification on Chef, we will be releasing remote logging for chef soon. See our wiki(https://github.com/errplane/docs/wiki/Chef-Integration) for details.
+
+
+
 Contributing
 ------------
 
