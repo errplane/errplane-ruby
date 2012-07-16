@@ -2,14 +2,6 @@ require 'net/http'
 require 'net/https'
 require 'rubygems'
 
-begin
-  require 'active_support'
-  require 'active_support/core_ext'
-rescue LoadError
-  require 'activesupport'
-  require 'activesupport/core_ext'
-end
-
 require "errplane/version"
 require "errplane/black_box"
 require "errplane/configuration"

@@ -9,18 +9,15 @@ feature "exception handling" do
 
   describe "in an action that raises an exception" do
     scenario "should make an HTTP call to the API" do
-      stub_request(:post, "#{Errplane.configuration.api_host}/exceptions").to_return(status: 200)
-
-      lambda { visit new_widget_path }.should raise_error
-
+      stub_request(:post, "#{Errplane.configuration.api_host}/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/test?api_key=f123-e456-d789c012").to_return(status: 200)
+      visit new_widget_path
       assert_requested :post, "#{Errplane.configuration.api_host}/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/test?api_key=f123-e456-d789c012"
     end
   end
 
   describe "in an action that does not raise an exception" do
     scenario "should not make an HTTP call to the API" do
-      lambda { visit widgets_path }.should_not raise_error
-
+      visit widgets_path
       assert_not_requested :post, "#{Errplane.configuration.api_host}/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/test?api_key=f123-e456-d789c012"
     end
   end

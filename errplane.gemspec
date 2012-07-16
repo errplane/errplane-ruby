@@ -18,6 +18,19 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  # s.add_development_dependency "combustion"
-  # s.add_runtime_dependency "rest-client"
+  s.licenses = ['MIT']
+
+  s.add_dependency 'activesupport', ['>= 2.3.14']
+  s.add_dependency 'actionpack', ['>= 2.3.14']
+
+  s.add_development_dependency 'bundler', ['>= 1.0.0']
+  s.add_development_dependency 'rake', ['>= 0']
+  s.add_development_dependency 'sqlite3', ['>= 0']
+  s.add_development_dependency 'tzinfo', ['>= 0']
+  s.add_development_dependency 'rspec', ['>= 0']
+  s.add_development_dependency 'rr', ['>= 0']
+  s.add_development_dependency 'capybara', ['>= 1.0']
+  s.add_development_dependency 'database_cleaner', ['>= 0']
+  s.add_development_dependency 'rdoc', ['>= 0']
+  s.add_development_dependency 'webmock', ['>= 0']
 end
