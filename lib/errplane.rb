@@ -61,7 +61,25 @@ module Errplane
       configuration.ignore_current_environment? || configuration.ignored_exceptions.include?(e.class.to_s)
     end
 
+    def rescue(&block)
+      block.call
+    rescue StandardError => e
+      if configuration.ignore_current_environment?
+        raise(e)
+      else
+        transmit_unless_ignorable(e, {})
+      end
+    end
+
+    def rescue_and_reraise(&block)
+      block.call
+    rescue StandardError => e
+      transmit_unless_ignorable(e, {})
+      raise(e)
+    end
+
     private
+
     def assemble_black_box_for(e, opts = {})
       opts ||= {}
       configuration.logger.info("OPTS: #{opts}")
