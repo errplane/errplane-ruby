@@ -1,5 +1,6 @@
-*.gem
 .bundle
+.rvmrc
+*.gem
 Gemfile.lock
 pkg/*
 spec/app/log
