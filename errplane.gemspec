@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'activesupport', ['>= 2.3.14']
   s.add_dependency 'actionpack', ['>= 2.3.14']
+  s.add_dependency 'json', ['>= 0']
 
   s.add_development_dependency 'bundler', ['>= 1.0.0']
   s.add_development_dependency 'rake', ['>= 0']
