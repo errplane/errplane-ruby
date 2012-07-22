@@ -54,7 +54,7 @@ Assuming this is running from within a normal Rails project, the values provided
 Customizing How Exceptions Get Grouped and Sending Additional Data
 ------------------------------------------------------------------
 
-The Errplane API will automatically attempt to group exceptions and threshold alerts based on a SHA hash of the exception class name and the first line of the backtrace. This works for some cases, but may be too noisy for failures that occur in different spots in your application that mean the same thing. This gem includes functionality to define a hash yourself to modify how exception groupings are made. That can be done by modify `config/initializers/resque.rb`:
+The Errplane API will automatically attempt to group exceptions and threshold alerts based on a SHA hash of the exception class name and the first line of the backtrace. This works for some cases, but may be too noisy for failures that occur in different spots in your application that mean the same thing. This gem includes functionality to define a hash yourself to modify how exception groupings are made. That can be done by modifying `config/initializers/resque.rb`:
 
     require 'digest/sha1'
 
@@ -67,7 +67,7 @@ The Errplane API will automatically attempt to group exceptions and threshold al
       end
     end
 
-That example will ensure that any divide by zero errors in your application will be grouped together, while all other exceptions will be grouped by the normal logic. The custom_exception_data block gets yielded a [Errplane::BlackBox](https://github.com/errplane/gem/blob/master/lib/errplane/black_box.rb) object. Through that object you can access exception information, request information, and custom data. You can also add custom data that can be viewed later in Errplane. This is useful if you want to capture additional context that we haven't already thought of including. When setting `custom_data.hash` it should always be some sort of digest like SHA1 used in the above example.
+That example will ensure that any divide by zero errors in your application will be grouped together, while all other exceptions will be grouped by the normal logic. The custom_exception_data block gets yielded an [Errplane::BlackBox](https://github.com/errplane/gem/blob/master/lib/errplane/black_box.rb) object. Through that object you can access exception information, request information, and custom data. You can also add custom data that can be viewed later in Errplane. This is useful if you want to capture additional context that we haven't already thought of including. When setting `custom_data.hash` it should always be some sort of digest like SHA1 used in the above example.
 
 Rails Remote Logger
 -------------------
