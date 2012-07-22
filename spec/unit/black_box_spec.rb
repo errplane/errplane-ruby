@@ -30,5 +30,21 @@ describe Errplane::BlackBox do
       json["time"].should_not be_nil
       json["backtrace"].should_not be_nil
     end
+
+    it "should include a custom hash if defined in the errplane config" do
+      Errplane.configure do |config|
+        config.define_custom_exception_data do |black_box|
+          if black_box.exception.class ==  ZeroDivisionError
+            black_box.hash = "some_hash"
+            black_box.custom_data[:extra_info] = "blah"
+          end
+        end
+      end
+
+      black_box = Errplane::BlackBox.new(exception: @exception)
+      json = JSON.parse(black_box.to_json)
+      json["hash"].should == "some_hash"
+      json["custom_data"]["extra_info"].should == "blah"
+    end
   end
 end

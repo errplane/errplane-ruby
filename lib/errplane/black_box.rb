@@ -1,5 +1,6 @@
 module Errplane
   class BlackBox
+    attr_accessor :hash
     attr_reader :exception
     attr_reader :params
     attr_reader :session_data
@@ -19,7 +20,7 @@ module Errplane
     end
 
     def to_json
-      {
+      paylaod = {
         :time => Time.now.to_i,
         :application_name => Errplane.configuration.application_name,
         :application_root => Errplane.configuration.application_root,
@@ -32,9 +33,15 @@ module Errplane
         :language_version => "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}",
         :environment_variables => ENV.to_hash,
         :reporter => reporter,
-        :request_data => request_data,
         :custom_data => @custom_data
-      }.to_json
+      }
+
+      Errplane.configuration.add_custom_exception_data(self)
+
+      paylaod[:request_data] = request_data if @controller || @action || !params.empty?
+      paylaod[:hash] = hash if hash
+
+      paylaod.to_json
     end
 
     def reporter

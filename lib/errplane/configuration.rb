@@ -65,6 +65,14 @@ module Errplane
       end
     end
 
+    def define_custom_exception_data(&block)
+      @custom_exception_data_handler = block
+    end
+
+    def add_custom_exception_data(black_box)
+      @custom_exception_data_handler.call(black_box) if @custom_exception_data_handler
+    end
+
     private
     def initialize_http_connection
       Net::HTTP.new(@app_host, "80")
