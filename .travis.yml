@@ -3,13 +3,21 @@ rvm:
   - 1.9.3
   - 1.9.2
   - jruby-18mode
-#  - jruby-19mode #TODO fix sqlite dep.
+  - jruby-19mode
   - rbx-18mode
   - rbx-19mode
-#  - ruby-head #breaks on new version of nokogir
-#  - jruby-head #
+  - ruby-head
+  - jruby-head
   - 1.8.7
   - ree
+gemfile:
+  - gemfiles/Gemfile.rails-3.2.x
+  - gemfiles/Gemfile.rails-3.1.x
+  - gemfiles/Gemfile.rails-3.0.x
+  - gemfiles/Gemfile.rails-2.3.x
+matrix:
+  allow_failures:
+    - gemfile: gemfiles/Gemfile.rails-2.3.x
 notifications:
   email:
     - matt@errplane.com
@@ -17,4 +25,4 @@ notifications:
     - paul@errplane.com
   on_success: change
   on_failure: always
-script: rake spec:normal
+script: rake spec
