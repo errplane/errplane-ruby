@@ -1,7 +1,6 @@
-[![Build Status](https://secure.travis-ci.org/errplane/gem.png)](http://travis-ci.org/errplane/[gem])
-
 Errplane
 ========
+[![Build Status](https://secure.travis-ci.org/errplane/gem.png)](http://travis-ci.org/errplane/[gem])
 
 This gem integrates your applications with [Errplane](http://errplane.com), a cloud-based tool for handling exceptions, log aggregation, uptime monitoring, and alerting.
 
