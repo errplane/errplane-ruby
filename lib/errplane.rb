@@ -2,7 +2,10 @@ require 'net/http'
 require 'net/https'
 require 'rubygems'
 
+require "json" unless Hash.respond_to?(:to_json)
+
 require "errplane/version"
+require "errplane/logger"
 require "errplane/black_box"
 require "errplane/configuration"
 require "errplane/transmitter"
@@ -13,6 +16,8 @@ require "errplane/sinatra" if defined? Sinatra::Request
 
 module Errplane
   class << self
+    include Logger
+
     attr_writer :configuration
     attr_accessor :transmitter
 
@@ -28,14 +33,14 @@ module Errplane
     def transmit_unless_ignorable(e, env)
       begin
         black_box = assemble_black_box_for(e, env)
-        configuration.logger.info("\nTransmitter: #{transmitter.inspect}") if configuration.debug?
-        configuration.logger.info("\nBlack Box: #{black_box.to_json}") if configuration.debug?
-        configuration.logger.info("\nIgnorable Exception? #{ignorable_exception?(e)}") if configuration.debug?
-        configuration.logger.info("\nEnvironment: #{ENV.to_hash}") if configuration.debug?
+        log :info, "Transmitter: #{transmitter.inspect}"
+        log :info, "Black Box: #{black_box.to_json}"
+        log :info, "Ignorable Exception? #{ignorable_exception?(e)}"
+        log :info, "Environment: #{ENV.to_hash}"
 
         transmitter.relay(black_box) unless ignorable_exception?(e)
       rescue => e
-        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off. 2-" + e.inspect)
+        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}")
       end
     end
 
@@ -47,13 +52,13 @@ module Errplane
           assemble_black_box_for(e, env)
         end
 
-        configuration.logger.info("\nTransmitter: #{transmitter.inspect}") if configuration.debug?
-        configuration.logger.info("\nBlack Box: #{black_box.to_json}") if configuration.debug?
-        configuration.logger.info("\nIgnorable Exception? #{ignorable_exception?(e)}") if configuration.debug?
-        configuration.logger.info("\nEnvironment: #{ENV.to_hash}") if configuration.debug?
+        log :info, "Transmitter: #{transmitter.inspect}"
+        log :info, "Black Box: #{black_box.to_json}"
+        log :info, "Ignorable Exception? #{ignorable_exception?(e)}"
+        log :info, "Environment: #{ENV.to_hash}"
         transmitter.relay(black_box)
       rescue => e
-        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off. 1-" + e.inspect)
+        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}")
       end
     end
 

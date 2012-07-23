@@ -16,16 +16,20 @@ module Errplane
     attr_accessor :language_version
     attr_accessor :ignored_exceptions
     attr_accessor :ignored_environments
+    attr_accessor :ignored_user_agents
+
     attr_accessor :environment_variables
 
     attr_accessor :debug
+    attr_accessor :reraise_global_exceptions
 
     DEFAULTS = {
       :api_host => "api.errplane.com",
       :app_host => "app.errplane.com",
       :ignored_exceptions => %w{ActiveRecord::RecordNotFound
                                 ActionController::RoutingError},
-      :ignored_environments => %w{development test cucumber selenium}
+      :ignored_environments => %w{development test cucumber selenium},
+      :ignored_user_agents => %w{GoogleBot}
     }
 
     def initialize
@@ -33,11 +37,17 @@ module Errplane
       @app_host = DEFAULTS[:app_host]
       @ignored_exceptions = DEFAULTS[:ignored_exceptions].dup
       @ignored_environments = DEFAULTS[:ignored_environments].dup
+      @ignored_user_agents = DEFAULTS[:ignored_user_agents].dup
       @debug = false
+      @rescue_global_exceptions = false
     end
 
     def debug?
       !!@debug
+    end
+
+    def reraise_global_exceptions?
+      !!@reraise_global_exceptions
     end
 
     def ignore_current_environment?

@@ -1,5 +1,4 @@
 require 'errplane'
-require 'json'
 
 Capistrano::Configuration.instance(:must_exist).load do
   after 'deploy',            'deploy:notify_errplane'

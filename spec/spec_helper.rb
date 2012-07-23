@@ -2,24 +2,41 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 ENV["RAILS_ENV"] ||= "test"
 
-begin
+require 'rails/version'
+
+if Rails::VERSION::MAJOR > 2
   require 'rails'
-rescue LoadError
+else
+  module Rails
+    class << self
+      def vendor_rails?; return false; end
+    end
+
+    class FakeConfig
+      def after_initialize; end
+    end
+    @@configuration = FakeConfig.new
+  end
+  require 'initializer'
+  RAILS_ROOT = "#{File.dirname(__FILE__)}/rails2"
 end
 
 require 'bundler/setup'
 Bundler.require
 
-require 'database_cleaner'
-require 'webmock/rspec'
-
-# Simulate a gem providing a subclass of ActiveRecord::Base before the Railtie is loaded.
-# require 'fake_gem' if defined? ActiveRecord
+require "fakeweb"
+FakeWeb.allow_net_connect = false
 
 if defined? Rails
-  require 'app/rails'
+  puts "Loading Rails v#{Rails.version}..."
 
-  require 'rspec/rails'
+  unless Rails.version.to_f < 3.0
+    require "app/rails3"
+    require "rspec/rails"
+  else
+    require "rails2/config/environment"
+    require "spec/rails"
+  end
 end
 if defined? Sinatra
   require 'spec_helper_for_sinatra'
@@ -29,9 +46,3 @@ end
 # in ./support/ and its subdirectories.
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
-RSpec.configure do |config|
-  config.color_enabled = true
-  config.tty = true
-  config.formatter = :documentation
-  config.mock_with :rr
-end

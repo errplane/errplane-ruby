@@ -1,5 +1,16 @@
 module Errplane
   class Transmitter
+    include Errplane::Logger
+
+    HTTP_ERRORS = [ EOFError,
+                    Errno::ECONNREFUSED,
+                    Errno::ECONNRESET,
+                    Errno::EINVAL,
+                    Net::HTTPBadResponse,
+                    Net::HTTPHeaderSyntaxError,
+                    Net::ProtocolError,
+                    Timeout::Error ].freeze
+
     def initialize(params = {})
     end
 
@@ -8,20 +19,17 @@ module Errplane
       data = black_box.to_json
       response = begin
                    url = "/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/#{Errplane.configuration.rails_environment}#{"/deploy" if deployment}?api_key=#{Errplane.configuration.api_key}"
-                   Errplane.configuration.logger.info("\nURL: #{url}") if Errplane.configuration.debug?
-                   Errplane.configuration.logger.info("\nData: #{data.inspect}") if Errplane.configuration.debug?
-                   response = http.post(url, data)
-                   Errplane.configuration.logger.info("\nException Response: #{response.inspect}") if Errplane.configuration.debug?
-                   response
-                 rescue Exception => e
-                   # e
+                   log :info, "URL: #{url}"
+                   log :info, "Data: #{data.inspect}"
+                   http.post(url, data)
+                 rescue *HTTP_ERRORS => e
+                   log :error, "Error contacting Errplane API! #{e.class}: #{e.message}"
                  end
 
-      case response
-      when Net::HTTPSuccess
-        # Success
+      if response == Net::HTTPSuccess
+        log :info, "Request Succeeded: #{response.inspect}"
       else
-        # Failure
+        log :error, "Request Failed: #{response.inspect}"
       end
     end
 
