@@ -15,4 +15,6 @@ notifications:
     - matt@errplane.com
     - todd@errplane.com
     - paul@errplane.com
+  on_success: change
+  on_failure: always
 script: rake spec:normal
