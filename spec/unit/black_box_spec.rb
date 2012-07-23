@@ -16,14 +16,14 @@ describe Errplane::BlackBox do
 
     it "should accept an exception as a parameter" do
 
-      black_box = Errplane::BlackBox.new(exception: @exception)
+      black_box = Errplane::BlackBox.new(:exception => @exception)
       black_box.should_not be_nil
     end
   end
 
   describe "#to_json" do
     it "should return a JSON string" do
-      black_box = Errplane::BlackBox.new(exception: @exception)
+      black_box = Errplane::BlackBox.new(:exception => @exception)
       json = JSON.parse(black_box.to_json)
 
       json["message"].should == "divided by 0"
@@ -41,7 +41,7 @@ describe Errplane::BlackBox do
         end
       end
 
-      black_box = Errplane::BlackBox.new(exception: @exception)
+      black_box = Errplane::BlackBox.new(:exception => @exception)
       json = JSON.parse(black_box.to_json)
       json["hash"].should == "some_hash"
       json["custom_data"]["extra_info"].should == "blah"
