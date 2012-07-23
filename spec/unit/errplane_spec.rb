@@ -31,7 +31,7 @@ describe Errplane do
         config.ignored_environments = %w{development}
       end
 
-      stub_request(:post, "#{Errplane.configuration.api_host}/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/test?api_key=f123-e456-d789c012").to_return(status: 200)
+      stub_request(:post, "#{Errplane.configuration.api_host}/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/test?api_key=f123-e456-d789c012").to_return(:status => 200)
       Errplane.rescue do
         raise ArgumentError.new('wrong')
       end
@@ -58,7 +58,7 @@ describe Errplane do
     end
 
     it "should transmit an exception when passed" do
-      stub_request(:post, "#{Errplane.configuration.api_host}/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/test?api_key=f123-e456-d789c012").to_return(status: 200)
+      stub_request(:post, "#{Errplane.configuration.api_host}/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/test?api_key=f123-e456-d789c012").to_return(:status => 200)
       expect {
         Errplane.rescue_and_reraise { raise ArgumentError.new('wrong') }
       }.to raise_error(ArgumentError)
