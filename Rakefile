@@ -28,6 +28,10 @@ namespace :spec do
       sh "BUNDLE_GEMFILE='gemfiles/#{gemfile}.gemfile' bundle exec rake spec"
     end
   end
+
+  task :normal do
+    sh "rake spec"
+  end
 end
 
 # require 'rdoc/task'
