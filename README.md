@@ -1,5 +1,7 @@
 "!https://secure.travis-ci.org/errplane/gem.png!":http://travis-ci.org/errplane/gem
 
+[![Build Status](https://secure.travis-ci.org/errplane/gem.png)](http://travis-ci.org/errplane/[gem])
+
 Errplane
 ========
 
