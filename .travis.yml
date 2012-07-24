@@ -18,11 +18,13 @@ gemfile:
 matrix:
   allow_failures:
     - gemfile: gemfiles/Gemfile.rails-2.3.x
+    - rvm: ruby-head
+      gemfile: gemfiles/Gemfile.rails-3.2.x
+    - rvm: jruby-head
+      gemfile: gemfiles/Gemfile.rails-3.0.x
 notifications:
   email:
-    - matt@errplane.com
-    - todd@errplane.com
-    - paul@errplane.com
+    - mechanics@errplane.com
   on_success: change
   on_failure: always
 script: rake spec
