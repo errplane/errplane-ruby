@@ -50,6 +50,11 @@ module Errplane
       !!@reraise_global_exceptions
     end
 
+    def ignore_user_agent?(incoming_user_agent)
+      return false if self.ignored_user_agents.nil?
+      self.ignored_user_agents.any? {|agent| incoming_user_agent =~ /#{agent}/}
+    end
+
     def ignore_current_environment?
       self.ignored_environments.include?(self.rails_environment)
     end

@@ -54,7 +54,6 @@ module Errplane
 
         log :info, "Transmitter: #{transmitter.inspect}"
         log :info, "Black Box: #{black_box.to_json}"
-        log :info, "Ignorable Exception? #{ignorable_exception?(e)}"
         log :info, "Environment: #{ENV.to_hash}"
         transmitter.relay(black_box)
       rescue => e

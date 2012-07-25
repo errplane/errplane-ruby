@@ -7,6 +7,7 @@ module Errplane
     attr_reader :controller
     attr_reader :action
     attr_reader :request_url
+    attr_reader :user_agent
     attr_reader :custom_data
 
     def initialize(params = {})
@@ -16,11 +17,12 @@ module Errplane
       @controller = params[:controller]
       @action = params[:action]
       @request_url = params[:request_url]
+      @user_agent = params[:user_agent]
       @custom_data = params[:custom_data] || {}
     end
 
     def to_json
-      paylaod = {
+      payload = {
         :time => Time.now.to_i,
         :application_name => Errplane.configuration.application_name,
         :application_root => Errplane.configuration.application_root,
@@ -38,10 +40,10 @@ module Errplane
 
       Errplane.configuration.add_custom_exception_data(self)
 
-      paylaod[:request_data] = request_data if @controller || @action || !params.empty?
-      paylaod[:hash] = hash if hash
+      payload[:request_data] = request_data if @controller || @action || !params.empty?
+      payload[:hash] = hash if hash
 
-      paylaod.to_json
+      payload.to_json
     end
 
     def reporter
@@ -58,7 +60,8 @@ module Errplane
         :session_data => @session_data,
         :controller => @controller,
         :action => @action,
-        :request_url => @request_url
+        :request_url => @request_url,
+        :user_agent => @user_agent
       }
     end
   end

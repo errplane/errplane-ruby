@@ -9,8 +9,11 @@ module Errplane
         def render_exception_with_errplane(env, e)
           controller = env["action_controller.instance"]
           Errplane.configuration.logger.info("Controller: #{controller}")
-          Errplane.configuration.logger.info("Request Data: #{controller.try(:errplane_request_data)}")
-          Errplane.transmit_unless_ignorable(e,  controller.try(:errplane_request_data))
+          request_data = controller.try(:errplane_request_data) || {}
+          Errplane.configuration.logger.info("Request Data: #{request_data}")
+          unless Errplane.configuration.ignore_user_agent?(request_data[:user_agent])
+            Errplane.transmit_unless_ignorable(e, request_data)
+          end
           render_exception_without_errplane(env, e)
         end
       end

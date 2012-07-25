@@ -7,7 +7,8 @@ module Errplane
           :session_data => errplane_session_data,
           :controller => params[:controller],
           :action => params[:action],
-          :request_url => errplane_request_url
+          :request_url => errplane_request_url,
+          :user_agent => request.env["HTTP_USER_AGENT"]
         }
       end
 

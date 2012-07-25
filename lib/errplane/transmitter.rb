@@ -23,10 +23,10 @@ module Errplane
                    log :info, "Data: #{data.inspect}"
                    http.post(url, data)
                  rescue *HTTP_ERRORS => e
-                   log :error, "Error contacting Errplane API! #{e.class}: #{e.message}"
+                   log :error, "HTTP error contacting Errplane API! #{e.class}: #{e.message}"
                  end
 
-      if response == Net::HTTPSuccess
+      if response.is_a?(Net::HTTPSuccess)
         log :info, "Request Succeeded: #{response.inspect}"
       else
         log :error, "Request Failed: #{response.inspect}"
