@@ -6,7 +6,6 @@ module Errplane
     attr_accessor :application_id
     attr_accessor :application_name
     attr_accessor :application_root
-    attr_accessor :syslogd_port
 
     attr_accessor :logger
     attr_accessor :rails_environment
@@ -57,27 +56,6 @@ module Errplane
 
     def ignore_current_environment?
       self.ignored_environments.include?(self.rails_environment)
-    end
-
-    def get_logport
-      puts "Acquiring port information from errplane"
-      http = initialize_http_connection
-      response = begin
-                   url = "/api/v1/syslogds.txt?api_key=#{@api_key}"
-                   http.get(url)
-                 rescue Exception => e
-                   puts e
-                 end
-
-
-      case response
-      when Net::HTTPSuccess
-        # Success
-        response.body
-      else
-        # Failure
-        ""
-      end
     end
 
     def define_custom_exception_data(&block)

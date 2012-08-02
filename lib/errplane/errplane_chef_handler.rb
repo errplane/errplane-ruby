@@ -50,14 +50,12 @@ class ErrplaneChefHandler < Chef::Handler
   end
 
   def setup_errplane
-    raise ArgumentError.new("You must specify Errplane api key") unless api_key    
+    raise ArgumentError.new("You must provide an Errplane API key") unless api_key
     Errplane.configure do |config|
       config.api_key = api_key
       config.application_id = "chef"
       config.application_name = "chef"
-      # config.syslogd_port = "4445"
       config.logger = Chef::Log
-      #config.logger = Logger.new(STDOUT)
       config.debug = false
       config.rails_environment = @environment
     end
