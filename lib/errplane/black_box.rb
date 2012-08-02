@@ -29,7 +29,7 @@ module Errplane
         :framework => Errplane.configuration.framework,
         :framework_version => Errplane.configuration.framework_version,
         :message => @exception.message,
-        :backtrace => @exception.backtrace || [],
+        :backtrace => Errplane::Backtrace.new(@exception.backtrace).to_a || [],
         :exception_class => @exception.class.to_s,
         :language => "Ruby",
         :language_version => "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}",

@@ -31,6 +31,10 @@ module Errplane
       end
     end
 
+    def to_a
+      lines.map(&:to_s)
+    end
+
     def inspect
       "<Backtrace: " + lines.collect { |line| line.to_s }.join(", ") + ">"
     end

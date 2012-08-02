@@ -24,6 +24,12 @@ describe Errplane::Backtrace do
     line.method.should == "bar"
   end
 
+  describe "#to_a" do
+    it "should return an array of lines" do
+      @backtrace.to_a.is_a?(Array).should be_true
+    end
+  end
+
   describe "backtrace filters" do
     before do
       Errplane.configure do |config|
