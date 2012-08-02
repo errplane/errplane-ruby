@@ -1,7 +1,7 @@
 PATH
   remote: /Users/todd/Projects/errplane/gem
   specs:
-    errplane (0.3.8)
+    errplane (0.4.0)
       actionpack (>= 2.3.14)
       activesupport (>= 2.3.14)
       json
@@ -72,6 +72,7 @@ GEM
     thor (0.15.4)
     tilt (1.3.3)
     tzinfo (0.3.33)
+    watchr (0.7)
 
 PLATFORMS
   ruby
@@ -88,3 +89,4 @@ DEPENDENCIES
   rspec
   rspec-rails (>= 2.0)
   tzinfo
+  watchr

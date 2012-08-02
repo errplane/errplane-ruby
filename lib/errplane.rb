@@ -9,6 +9,7 @@ require "errplane/logger"
 require "errplane/black_box"
 require "errplane/configuration"
 require "errplane/transmitter"
+require "errplane/backtrace"
 require "errplane/rack"
 
 require "errplane/railtie" if defined? Rails::Railtie

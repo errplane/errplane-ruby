@@ -16,6 +16,7 @@ module Errplane
     attr_accessor :ignored_exceptions
     attr_accessor :ignored_environments
     attr_accessor :ignored_user_agents
+    attr_accessor :backtrace_filters
 
     attr_accessor :environment_variables
 
@@ -28,7 +29,20 @@ module Errplane
       :ignored_exceptions => %w{ActiveRecord::RecordNotFound
                                 ActionController::RoutingError},
       :ignored_environments => %w{development test cucumber selenium},
-      :ignored_user_agents => %w{GoogleBot}
+      :ignored_user_agents => %w{GoogleBot},
+      :backtrace_filters => [
+        lambda { |line| line.gsub(/^\.\//, "") },
+        lambda { |line|
+          return line if Errplane.configuration.application_root.to_s.empty?
+          line.gsub(/#{Errplane.configuration.application_root}/, "[APP_ROOT]")
+        },
+        lambda { |line|
+          if defined?(Gem) && !Gem.path.nil? && !Gem.path.empty?
+            Gem.path.each { |path| line = line.gsub(/#{path}/, "[GEM_ROOT]") }
+          end
+          line
+        }
+      ]
     }
 
     def initialize
@@ -37,6 +51,7 @@ module Errplane
       @ignored_exceptions = DEFAULTS[:ignored_exceptions].dup
       @ignored_environments = DEFAULTS[:ignored_environments].dup
       @ignored_user_agents = DEFAULTS[:ignored_user_agents].dup
+      @backtrace_filters = DEFAULTS[:backtrace_filters].dup
       @debug = false
       @rescue_global_exceptions = false
     end
