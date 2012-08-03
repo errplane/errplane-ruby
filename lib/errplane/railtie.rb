@@ -72,7 +72,7 @@ module Errplane
         config.application_root      ||= ::Rails.root
         config.application_name      ||= ::Rails.application.class.parent_name
         config.framework               = "Rails"
-        config.framework_version       = ::Rails::VERSION::STRING
+        config.framework_version       = ::Rails.version
       end
 
       ActiveSupport.on_load(:action_controller) do

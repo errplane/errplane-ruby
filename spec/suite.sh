@@ -18,7 +18,7 @@ function versions() {
   build_version "3.2.x"
   build_version "3.1.x"
   build_version "3.0.x"
-  # build_version "2.3.x"
+  build_version "2.3.x"
 }
 
 function use_ruby() {

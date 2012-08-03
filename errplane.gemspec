@@ -31,5 +31,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rdoc', ['>= 0']
   s.add_development_dependency 'rr', ['>= 0']
   s.add_development_dependency 'rspec', ['>= 0']
+  s.add_development_dependency 'ruby-fsevent', ['>= 0']
   s.add_development_dependency 'watchr', ['>= 0']
 end

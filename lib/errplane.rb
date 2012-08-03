@@ -12,8 +12,8 @@ require "errplane/transmitter"
 require "errplane/backtrace"
 require "errplane/rack"
 
-require "errplane/railtie" if defined? Rails::Railtie
-require "errplane/sinatra" if defined? Sinatra::Request
+require "errplane/railtie" if defined?(Rails::Railtie)
+require "errplane/sinatra" if defined?(Sinatra::Request)
 
 module Errplane
   class << self
@@ -41,7 +41,7 @@ module Errplane
 
         transmitter.relay(black_box) unless ignorable_exception?(e)
       rescue => e
-        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}")
+        log :info, "[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}"
       end
     end
 
@@ -58,7 +58,7 @@ module Errplane
         log :info, "Environment: #{ENV.to_hash}"
         transmitter.relay(black_box)
       rescue => e
-        configuration.logger.info("[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}")
+        log :info, "[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}"
       end
     end
 
@@ -87,7 +87,7 @@ module Errplane
 
     def assemble_black_box_for(e, opts = {})
       opts ||= {}
-      configuration.logger.info("OPTS: #{opts}")
+      log :info, "OPTS: #{opts}"
       e = e.continued_exception if e.respond_to?(:continued_exception)
       e = e.original_exception if e.respond_to?(:original_exception)
       opts = opts.merge(:exception => e)
@@ -95,3 +95,5 @@ module Errplane
     end
   end
 end
+
+require "errplane/rails" if defined?(Rails) && !defined?(Rails::Railtie)

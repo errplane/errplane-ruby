@@ -1,3 +1,4 @@
+watch( '^lib/errplane.rb' )    { build "rake spec" }
 watch( '^lib/errplane/(.*)\.rb' )    { |m| build "rake spec" }
 watch( '^spec/spec_helper\.rb' )  { |m| build "rake spec" }
 watch( '^spec/unit/(.*)_spec\.rb' )  { |m| build "rake spec" }

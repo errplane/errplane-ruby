@@ -12,10 +12,10 @@ else
       def vendor_rails?; return false; end
     end
 
-    class FakeConfig
+    class Configuration
       def after_initialize; end
     end
-    @@configuration = FakeConfig.new
+    @@configuration = Configuration.new
   end
   require 'initializer'
   RAILS_ROOT = "#{File.dirname(__FILE__)}/rails2"
