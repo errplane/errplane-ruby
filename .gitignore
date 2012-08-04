@@ -2,6 +2,7 @@
 .rvmrc
 *.gem
 Gemfile.lock
+gemfiles/*.lock
 pkg/*
 spec/support/rails2/log/*
 spec/support/rails3/log/*
