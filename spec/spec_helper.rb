@@ -31,10 +31,10 @@ if defined? Rails
 
   if Rails.version.to_f < 3.0
     RAILS_ROOT = "#{File.dirname(__FILE__)}/support/rails2"
-    require "#{RAILS_ROOT}/config/environment"
+    require "#{RAILS_ROOT}/config/environment.rb"
     require "spec/rails"
   else
-    require "#{File.dirname(__FILE__)}/support/rails3/app"
+    require "#{File.dirname(__FILE__)}/support/rails3/app.rb"
     require "rspec/rails"
   end
 end
