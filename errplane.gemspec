@@ -20,16 +20,16 @@ Gem::Specification.new do |s|
 
   s.licenses = ['MIT']
 
-  s.add_dependency 'activesupport', ['>= 2.3.14']
-  s.add_dependency 'actionpack', ['>= 2.3.14']
-  s.add_dependency 'json', ['>= 0']
+  s.add_runtime_dependency 'json'
 
+  s.add_development_dependency 'activesupport', ['>= 2.3.14']
+  s.add_development_dependency 'actionpack', ['>= 2.3.14']
   s.add_development_dependency 'bundler', ['>= 1.0.0']
   s.add_development_dependency 'fakeweb', ['>= 0']
-  s.add_development_dependency 'tzinfo', ['>= 0']
+  s.add_development_dependency 'guard', ['>= 0']
+  s.add_development_dependency 'guard-rspec', ['>= 0']
   s.add_development_dependency 'rake', ['>= 0']
   s.add_development_dependency 'rdoc', ['>= 0']
-  s.add_development_dependency 'rr', ['>= 0']
   s.add_development_dependency 'rspec', ['>= 0']
-  s.add_development_dependency 'watchr', ['>= 0']
+  s.add_development_dependency 'tzinfo', ['>= 0']
 end

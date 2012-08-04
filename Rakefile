@@ -22,7 +22,6 @@ begin
     config.color_enabled = true
     config.tty = true
     config.formatter = :documentation
-    config.mock_with :rr
   end
 rescue LoadError
   require 'spec/rake/spectask'

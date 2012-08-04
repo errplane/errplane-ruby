@@ -95,5 +95,3 @@ module Errplane
     end
   end
 end
-
-require "errplane/rails" if defined?(Rails) && !defined?(Rails::Railtie)
