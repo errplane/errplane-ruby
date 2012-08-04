@@ -11,8 +11,8 @@ Support
 
 Running into any issues? Get in touch with us at [support@errplane.com](mailto:support@errplane.com).
 
-Ruby on Rails Installation
---------------------------
+Rails 3.x Installation
+----------------------
 
 Start by adding the gem to your Gemfile:
 
@@ -22,6 +22,24 @@ Then, issue the following commands in your application's root directory:
 
     bundle
     rails g errplane --api-key your-api-key-goes-here
+
+This will create `config/initializers/errplane.rb` for you automatically. If you want to make sure that everything's working correctly, just run:
+
+    bundle exec rake errplane:test
+
+You should be able to view the exception at [http://errplane.com](http://errplane.com) and also receive an email notification of the test exception.
+
+Rails 2.3.x Installation
+------------------------
+
+Start by adding the gem to your Gemfile:
+
+    gem "errplane"
+
+Then, issue the following commands in your application's root directory:
+
+    bundle
+    script/generate errplane --api-key your-api-key-goes-here
 
 This will create `config/initializers/errplane.rb` for you automatically. If you want to make sure that everything's working correctly, just run:
 
