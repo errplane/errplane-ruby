@@ -3,5 +3,5 @@
 *.gem
 Gemfile.lock
 pkg/*
-spec/app/log
-spec/rails2/log
+spec/support/rails2/log/*
+spec/support/rails3/log/*

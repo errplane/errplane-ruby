@@ -6,10 +6,8 @@ require 'errplane/rails/air_traffic_controller'
 module Errplane
   module Rails
     def self.initialize
-      # if defined? Rails::ActionController::Base
       ActionController::Base.send(:include, Errplane::Rails::AirTrafficController)
       ActionController::Base.send(:include, Errplane::Rails::Middleware::HijackRescueActionEverywhere)
-      # end
 
       ::Rails.configuration.middleware.insert_after 'ActionController::Failsafe', Errplane::Rack
 

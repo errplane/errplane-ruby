@@ -1,7 +1,7 @@
 PATH
   remote: /Users/todd/Projects/errplane/gem
   specs:
-    errplane (0.4.2)
+    errplane (0.4.3)
       json
 
 GEM

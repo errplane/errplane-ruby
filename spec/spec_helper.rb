@@ -18,7 +18,6 @@ else
     @@configuration = Configuration.new
   end
   require 'initializer'
-  RAILS_ROOT = "#{File.dirname(__FILE__)}/rails2"
 end
 
 require 'bundler/setup'
@@ -31,16 +30,15 @@ if defined? Rails
   puts "Loading Rails v#{Rails.version}..."
 
   unless Rails.version.to_f < 3.0
-    require "app/rails3"
+    require "support/rails3/app"
     require "rspec/rails"
   else
-    require "rails2/config/environment"
+    RAILS_ROOT = "#{File.dirname(__FILE__)}/support/rails2"
+    require "#{RAILS_ROOT}/config/environment"
     require "spec/rails"
   end
 end
+
 if defined? Sinatra
   require 'spec_helper_for_sinatra'
 end
-
-Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
-
