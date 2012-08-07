@@ -38,6 +38,27 @@ In your `config/deploy.rb`, add the following line:
 
 This will automatically pull your API key from the Rails initializer and notify Errplane of every deployment.
 
+Sinatra Integration
+--------------------
+Here is a simple sinatra example app. With Sinatra you need to create an application first in the [web site](http://errplane.com/exceptions)
+
+```
+require 'sinatra'
+require 'errplane'
+
+Errplane.configure do |config|
+  config.api_key = "<API KEY HERE>"
+  config.application_id = "<APP KEY HERE>"
+  config.ignored_environments = ["development"]
+end
+
+
+get '/test_error' do
+  raise "hello"
+  "Hello World!"
+end
+````
+
 Resque Integration With Multiple Failure Backends
 -------------------------------------------------
 

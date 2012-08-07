@@ -1,5 +1,5 @@
 Errplane.configure(true) do |config|
-  config.logger                ||= logger
+  config.logger                ||= ENV['rack.logger']
   config.rails_environment     ||= settings.environment
   config.application_root            ||= settings.root
   config.framework               = "Sinatra"
