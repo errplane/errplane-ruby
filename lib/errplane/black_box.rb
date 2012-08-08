@@ -16,7 +16,7 @@ module Errplane
       @session_data = params[:session_data] || {}
       @controller = params[:controller]
       @action = params[:action]
-      @request_url = params[:request_url]
+      @request_url = params[:request_url] || params["PATH_INFO"]
       @user_agent = params[:user_agent]
       @custom_data = params[:custom_data] || {}
     end
