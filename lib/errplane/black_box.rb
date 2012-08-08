@@ -12,12 +12,12 @@ module Errplane
 
     def initialize(params = {})
       @exception = params[:exception]
-      @params = params[:params] || {}
-      @session_data = params[:session_data] || {}
+      @params = params[:params] ||   params["rack.request.query_hash"] || {}
+      @session_data = params[:session_data] || params["rack.session"] || {}
       @controller = params[:controller]
-      @action = params[:action]
-      @request_url = params[:request_url] || params["PATH_INFO"]
-      @user_agent = params[:user_agent]
+      @action = params[:action] || params["REQUEST_PATH"]
+      @request_url = params[:request_url] || params["REQUEST_PATH"]
+      @user_agent = params[:user_agent] || params["HTTP_USER_AGENT"]
       @custom_data = params[:custom_data] || {}
     end
 
