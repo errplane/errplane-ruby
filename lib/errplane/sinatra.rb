@@ -13,9 +13,9 @@ def handle_exception(e)
   request_data = {
     :request_url => request.env["REQUEST_URI"],
     :user_agent => request.env["HTTP_USER_AGENT"],
-    :params => params["rack.request.query_hash"],
-    :action => params["REQUEST_PATH"],
-    :session => (defined?(session) ? session : params["rack.session"]) || {}
+    :params => request.env["rack.request.query_hash"],
+    :action => request.env["REQUEST_PATH"],
+    :session => (defined?(session) ? session : request.env["rack.session"]) || {}
   }
 
   Errplane.transmit_unless_ignorable(e, request_data)
