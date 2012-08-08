@@ -96,4 +96,3 @@ module Errplane
 end
 
 require "errplane/sinatra" if defined?(Sinatra::Request)
-
