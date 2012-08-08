@@ -1,5 +1,5 @@
 Errplane.configure(true) do |config|
-  config.logger                ||= (defined?(logger) ? logger : ENV['rack.logger'])
+  config.logger               ||= (defined?(logger) ? logger : ENV['rack.logger'])
   config.framework              = "Sinatra"
   config.framework_version      = ::Sinatra::VERSION
 
