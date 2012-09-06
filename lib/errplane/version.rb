@@ -1,3 +1,3 @@
 module Errplane
-  VERSION = "0.4.10"
+  VERSION = "0.4.12"
 end
