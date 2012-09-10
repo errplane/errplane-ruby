@@ -2,8 +2,12 @@ module Errplane
   module Rails
     module AirTrafficController
       def errplane_request_data
+        use_params = params.to_hash
+        if respond_to?(:filter_parameters)
+          use_params = filter_parameters(use_params)
+        end
         {
-          :params => params.to_hash,
+          :params => use_params,
           :session_data => errplane_session_data,
           :controller => params[:controller],
           :action => params[:action],
