@@ -4,18 +4,19 @@ require "uri"
 require "base64"
 
 module Errplane
-  class ErrplaneNotifications
+  class NotificationsQueue
     @@notifications = Queue.new
+
     def self.notifications
       return @@notifications
     end
 
-    def self.new_queue
+    def self.initialize
       @@notifications = Queue.new
     end
   end
 
-  PLOGGER = Logger.new("log/perfs.log", shift_age = 7, shift_size = 5048576)
+  PLOGGER = [] #Logger.new("log/perfs.log", shift_age = 7, shift_size = 5048576)
 
   def post_data(data)
     PLOGGER << "Posting data!\n -#{data}"
@@ -42,9 +43,6 @@ module Errplane
 
   def spawn_thread()
     Thread.new do
-      last_action_name = ""
-      last_controller_name = ""
-
       while true
         sleep(2) # Take a little break, so an idle running worker doesn't keep the system busy
         begin
@@ -65,8 +63,6 @@ module Errplane
               out << "views #{n[:payload][:view_runtime].ceil} #{n[:finish].utc.to_i }"
               out << "db #{n[:payload][:db_runtime].ceil} #{n[:finish].utc.to_i }"
               post_data(out.join("\n"))
-              # elsif( n[:name].to_s == "!render_template.action_view" )
-              #   out << "controllers/#{last_controller_name = ""}/action/#{last_action_name}/view/#{n[:payload][:virtual_path]} #{n[:finish].gmtime.to_i} #{timediff}"
             else
               PLOGGER << "name-#{n[:name]}-"
             end
@@ -84,15 +80,12 @@ module Errplane
   if defined?(PhusionPassenger)
     PhusionPassenger.on_event(:starting_worker_process) do |forked|
       if forked
-        # We're in smart spawning mode.
-        ErrplaneNotifications.new_queue
+        Errplane::NotificationsQueue.initialize
         spawn_thread()
-      else
-        # We're in conservative spawning mode. We don't need to do anything.
       end
     end
   else
-    ErrplaneNotifications.new_queue
+    Errplane::NotificationsQueue.initialize
     spawn_thread()
   end
 end
