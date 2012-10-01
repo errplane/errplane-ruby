@@ -40,7 +40,7 @@ module Errplane
 
       Errplane.configuration.add_custom_exception_data(self)
 
-      payload[:request_data] = request_data if @controller || @action || !params.empty?
+      payload[:request_data] = request_data if @controller || @action || !@params.blank?
       payload[:hash] = hash if hash
 
       payload.to_json
