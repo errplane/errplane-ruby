@@ -35,11 +35,10 @@ module Errplane
       def spawn_thread()
         Thread.new do
           while true
-            sleep(2) # Take a little break, so an idle running worker doesn't keep the system busy
+            sleep 2
             begin
-              # PLOGGER << "Waking up !-#{ErrplaneNotifications.notifications.inspect}"
               out = []
-              while !ErrplaneNotifications.notifications.empty?
+              while !Errplane::NotificationsQueue.notifications.empty?
                 log :info, "not empty!"
                 n = ErrplaneNotifications.notifications.pop
                 timediff = n[:finish] - n[:start]
@@ -59,8 +58,6 @@ module Errplane
                 end
                 log :info, "Popped!"
               end
-              #POST HERE
-              #post_data(out.join("\n"))
             rescue => e
               log :info, "Error-#{e.inspect}\n"
             end
@@ -72,11 +69,7 @@ module Errplane
 
   ActiveSupport::Notifications.subscribe do |name, start, finish, id, payload|
     h = { :name => name, :start => start, :finish => finish, :nid => id, :payload => payload }
-  #  Rails.logger.error("Pushing!")
-
-    ErrplaneNotifications.notifications.push  h
-    # post_data("controllers/ExceptionsController/action/index 1336.819 1344112120\ncontrollers/ExceptionsController/action/index/views 919.1610000000001 1344112120\ncontrollers/ExceptionsController/action/index/db 106.22600000000004 134411212\n")
-  #  Rails.logger.error("Pushed!-#{ErrplaneNotifications.notifications.inspect}")
+    Errplane::NotificationsQueue.notifications.push h
   end
 
   if defined?(PhusionPassenger)
