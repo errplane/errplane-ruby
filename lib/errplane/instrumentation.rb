@@ -44,10 +44,7 @@ module Errplane
                 timediff = n[:finish] - n[:start]
                 if( n[:name].to_s == "process_action.action_controller" )
                   data = [].tap do |line|
-                    line << "controllers/#{n[:payload][:controller]}/actions/#{n[:payload][:action]} #{(timediff*1000).ceil} #{n[:finish].utc.to_i}"
-                    line << "controllers/#{n[:payload][:controller]}/actions/#{n[:payload][:action]}/views #{n[:payload][:view_runtime].ceil} #{n[:finish].utc.to_i }"
-                    line << "controllers/#{n[:payload][:controller]}/actions/#{n[:payload][:action]}/db #{n[:payload][:db_runtime].ceil} #{n[:finish].utc.to_i }"
-                    line << "controllers #{(timediff*1000).ceil} #{n[:finish].utc.to_i }"
+                    line << "controllers/#{n[:payload][:controller]}/#{n[:payload][:action]} #{(timediff*1000).ceil} #{n[:finish].utc.to_i}"
                     line << "views #{n[:payload][:view_runtime].ceil} #{n[:finish].utc.to_i }"
                     line << "db #{n[:payload][:db_runtime].ceil} #{n[:finish].utc.to_i }"
                   end
