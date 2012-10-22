@@ -4,15 +4,15 @@ require "uri"
 require "base64"
 
 module Errplane
-  class NotificationsQueue
-    @@notifications = Queue.new
+  class Relay
+    @@queue = Queue.new
 
-    def self.notifications
-      return @@notifications
+    def self.queue
+      return @@queue
     end
 
     def self.initialize
-      @@notifications = Queue.new
+      @@queue = Queue.new
     end
   end
 
@@ -38,9 +38,9 @@ module Errplane
             log :debug, "Checking background queue."
             sleep 5
             begin
-              while !Errplane::NotificationsQueue.notifications.empty?
+              while !Errplane::Relay.queue.empty?
                 log :info, "Found data in the queue."
-                n = Errplane::NotificationsQueue.notifications.pop
+                n = Errplane::Relay.queue.pop
                 timediff = n[:finish] - n[:start]
                 if( n[:name].to_s == "process_action.action_controller" )
                   data = [].tap do |line|
@@ -64,18 +64,18 @@ module Errplane
 
   ActiveSupport::Notifications.subscribe do |name, start, finish, id, payload|
     h = { :name => name, :start => start, :finish => finish, :nid => id, :payload => payload }
-    Errplane::NotificationsQueue.notifications.push h
+    Errplane::Relay.queue.push h
   end
 
   if defined?(PhusionPassenger)
     PhusionPassenger.on_event(:starting_worker_process) do |forked|
       if forked
-        Errplane::NotificationsQueue.initialize
+        Errplane::Relay.initialize
         Errplane::Instrumentation.spawn_thread()
       end
     end
   else
-    Errplane::NotificationsQueue.initialize
+    Errplane::Relay.initialize
     Errplane::Instrumentation.spawn_thread()
   end
 end

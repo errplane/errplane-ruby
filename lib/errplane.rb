@@ -31,6 +31,10 @@ module Errplane
       @configuration ||= Configuration.new
     end
 
+    def report(name, params = {})
+      Errplane::Relay.queue.push {name: name}.merge(params)
+    end
+
     def transmit_unless_ignorable(e, env)
       begin
         black_box = assemble_black_box_for(e, env)
