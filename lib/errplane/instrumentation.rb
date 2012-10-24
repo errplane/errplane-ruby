@@ -62,9 +62,11 @@ module Errplane
     end
   end
 
-  ActiveSupport::Notifications.subscribe do |name, start, finish, id, payload|
-    h = { :name => name, :start => start, :finish => finish, :nid => id, :payload => payload }
-    Errplane::Relay.queue.push h
+  if defined?(ActiveSupport::Notifications)
+    ActiveSupport::Notifications.subscribe do |name, start, finish, id, payload|
+      h = { :name => name, :start => start, :finish => finish, :nid => id, :payload => payload }
+      Errplane::Relay.queue.push h
+    end
   end
 
   if defined?(PhusionPassenger)
