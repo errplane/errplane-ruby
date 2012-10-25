@@ -42,7 +42,13 @@ module Errplane
           response = ::Rails.application.call(env)
 
           if response.try(:first) == 500
-            puts "Done. Check your email or http://errplane.com for the exception notice."
+            if Errplane.transmitter.last_response.nil?
+              puts "Uh oh. Your app threw an exception, but we didn't get a response. Check your network connection and try again."
+            elsif Errplane.transmitter.last_response.code == "201"
+              puts "Done. Check your email or http://errplane.com for the exception notice."
+            else
+              puts "That didn't work. The Errplane API said: #{Errplane.transmitter.last_response.body}"
+            end
           else
             puts "Request failed: #{response}"
 
@@ -51,7 +57,13 @@ module Errplane
             response = ::Rails.application.call(env)
 
             if response.try(:first) == 500
-              puts "Done. Check your email or http://errplane.com for the exception notice."
+              if Errplane.transmitter.last_response.nil?
+                puts "Uh oh. Your app threw an exception, but we didn't get a response. Check your network connection and try again."
+              elsif Errplane.transmitter.last_response.code == "201"
+                puts "Done. Check your email or http://errplane.com for the exception notice."
+              else
+                puts "That didn't work. The Errplane API said: #{Errplane.transmitter.last_response.body}"
+              end
             else
               puts "Request failed: #{response}"
               puts "We didn't get the exception we were expecting. Contact support@errplane.com and send them all of this output."
