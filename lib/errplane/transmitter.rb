@@ -2,6 +2,8 @@ module Errplane
   class Transmitter
     include Errplane::Logger
 
+    attr_reader :last_response
+
     HTTP_ERRORS = [ EOFError,
                     Errno::ECONNREFUSED,
                     Errno::ECONNRESET,
@@ -12,6 +14,7 @@ module Errplane
                     Timeout::Error ].freeze
 
     def initialize(params = {})
+      @last_response = nil
     end
 
     def relay(black_box, deployment = false)
@@ -26,6 +29,7 @@ module Errplane
                    log :error, "HTTP error contacting Errplane API! #{e.class}: #{e.message}"
                  end
 
+      @last_response = response
       if response.is_a?(Net::HTTPSuccess)
         log :info, "Request Succeeded: #{response.inspect}"
       else
