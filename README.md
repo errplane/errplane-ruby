@@ -21,7 +21,7 @@ Start by adding the gem to your Gemfile:
 Then, issue the following commands in your application's root directory:
 
     bundle
-    rails g errplane --api-key your-api-key-goes-here
+    rails g errplane your-api-key-goes-here
 
 This will create `config/initializers/errplane.rb` for you automatically. If you want to make sure that everything's working correctly, just run:
 
