@@ -13,7 +13,6 @@ require "errplane/backtrace"
 require "errplane/rack"
 
 require "errplane/railtie" if defined?(Rails::Railtie)
-require "errplane/instrumentation"
 
 module Errplane
   class << self
@@ -100,4 +99,5 @@ module Errplane
   end
 end
 
+require "errplane/instrumentation"
 require "errplane/sinatra" if defined?(Sinatra::Request)

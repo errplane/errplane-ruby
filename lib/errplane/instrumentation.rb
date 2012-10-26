@@ -41,6 +41,7 @@ module Errplane
               while !Errplane::Relay.queue.empty?
                 log :info, "Found data in the queue."
                 n = Errplane::Relay.queue.pop
+
                 if( n[:name].to_s == "process_action.action_controller" )
                   timediff = n[:finish] - n[:start]
                   data = [].tap do |line|
@@ -50,7 +51,8 @@ module Errplane
                   end
                   post_data(data.join("\n"))
                 elsif n[:source] == "custom"
-                  line = "#{n[:name]} #{n[:message]} #{n[:value]}"
+                  line = "#{n[:name]} #{n[:value] || 1} #{Time.now.utc.to_i}"
+                  line << " #{Base64.encode64(n[:message])}" if n[:message]
                   post_data(line)
                 else
                   log :info, "Ignored instrumentation: #{n[:name]} #{n}"
@@ -65,7 +67,7 @@ module Errplane
     end
   end
 
-  if defined?(ActiveSupport::Notifications)
+  if defined?(ActiveSupport::Notifications) #&& Errplane.configuration.instrumentation_enabled?
     ActiveSupport::Notifications.subscribe do |name, start, finish, id, payload|
       h = { :name => name, :start => start, :finish => finish, :nid => id, :payload => payload }
       Errplane::Relay.queue.push h

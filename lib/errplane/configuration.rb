@@ -20,6 +20,7 @@ module Errplane
 
     attr_accessor :environment_variables
 
+    attr_accessor :instrumentation_enabled
     attr_accessor :debug
     attr_accessor :reraise_global_exceptions
 
@@ -54,10 +55,15 @@ module Errplane
       @backtrace_filters = DEFAULTS[:backtrace_filters].dup
       @debug = false
       @rescue_global_exceptions = false
+      @instrumentation_enabled = true
     end
 
     def debug?
       !!@debug
+    end
+
+    def instrumentation_enabled?
+      !!@instrumentation_enabled
     end
 
     def reraise_global_exceptions?
