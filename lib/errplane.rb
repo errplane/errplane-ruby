@@ -32,7 +32,7 @@ module Errplane
     end
 
     def report(name, params = {})
-      Errplane::Relay.queue.push({:name => name}.merge(params))
+      Errplane::Relay.queue.push({:name => name, :source => "custom"}.merge(params))
     end
 
     def transmit_unless_ignorable(e, env)
