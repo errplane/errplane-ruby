@@ -1,6 +1,7 @@
-require 'net/http'
-require 'net/https'
-require 'rubygems'
+require "net/http"
+require "net/https"
+require "rubygems"
+require "socket"
 
 require "json" unless Hash.respond_to?(:to_json)
 
@@ -32,6 +33,17 @@ module Errplane
 
     def report(name, params = {})
       Errplane::Relay.queue.push({:name => name, :source => "custom"}.merge(params))
+    end
+
+    def time(name = nil)
+      start_time = Time.now
+      yield
+      elapsed_time = Time.now - start_time
+      Errplane::Relay.queue.push({
+        :name => "timed_blocks/#{(name || Socket.gethostname)}",
+        :source => "custom",
+        :value => elapsed_time*1000
+      })
     end
 
     def transmit_unless_ignorable(e, env)
