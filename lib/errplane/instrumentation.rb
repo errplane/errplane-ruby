@@ -21,14 +21,16 @@ module Errplane
       include Errplane::Logger
 
       def post_data(data)
-        log :info, "Posting data:\n#{data}"
-
-        app_key = "app4you2love"
-        env_key = "production"
-
-        http = Net::HTTP.new("api1.errplane.com", "8086")
-        response = http.post("/api/v2/time_series/applications/#{app_key}/environments/#{env_key}?api_key=ignored", data)
-        log :info, "Response code: #{response.code}"
+        if Errplane.configuration.ignore_current_environment?
+          log :debug, "Current environment is ignored, skipping POST."
+        else
+          log :info, "Posting data:\n#{data}"
+          http = Net::HTTP.new("api1.errplane.com", "8086")
+          url = "/api/v2/time_series/applications/#{Errplane.configuration.application_id}/environments/#{Errplane.configuration.rails_environment}?api_key=ignored"
+          response = http.post(url, data)
+          log :info, "Posting to: #{url}"
+          log :info, "Response code: #{response.code}"
+        end
       end
 
       def spawn_thread()
@@ -40,7 +42,7 @@ module Errplane
             begin
               data = [].tap do |line|
                 while !Errplane::Relay.queue.empty?
-                  log :info, "Found data in the queue."
+                  log :debug, "Found data in the queue."
                   n = Errplane::Relay.queue.pop
 
                   case n[:source]
