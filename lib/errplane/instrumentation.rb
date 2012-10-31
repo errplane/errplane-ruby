@@ -38,26 +38,28 @@ module Errplane
             log :debug, "Checking background queue."
             sleep 5
             begin
-              while !Errplane::Relay.queue.empty?
-                log :info, "Found data in the queue."
-                n = Errplane::Relay.queue.pop
+              data = [].tap do |line|
+                while !Errplane::Relay.queue.empty?
+                  log :info, "Found data in the queue."
+                  n = Errplane::Relay.queue.pop
 
-                if( n[:name].to_s == "process_action.action_controller" )
-                  timediff = n[:finish] - n[:start]
-                  data = [].tap do |line|
-                    line << "controllers/#{n[:payload][:controller]}/#{n[:payload][:action]} #{(timediff*1000).ceil} #{n[:finish].utc.to_i}"
-                    line << "views #{n[:payload][:view_runtime].ceil} #{n[:finish].utc.to_i }"
-                    line << "db #{n[:payload][:db_runtime].ceil} #{n[:finish].utc.to_i }"
+                  case n[:source]
+                  when "active_support"
+                    case n[:name].to_s
+                    when "process_action.action_controller"
+                      timediff = n[:finish] - n[:start]
+                      line << "controllers/#{n[:payload][:controller]}/#{n[:payload][:action]} #{(timediff*1000).ceil} #{n[:finish].utc.to_i}"
+                      line << "views #{n[:payload][:view_runtime].ceil} #{n[:finish].utc.to_i }"
+                      line << "db #{n[:payload][:db_runtime].ceil} #{n[:finish].utc.to_i }"
+                    end
+                  when "custom"
+                    s = "#{n[:name]} #{n[:value] || 1} #{Time.now.utc.to_i}"
+                    s << " #{Base64.encode64(n[:message])}" if n[:message]
+                    line << s
                   end
-                  post_data(data.join("\n"))
-                elsif n[:source] == "custom"
-                  line = "#{n[:name]} #{n[:value] || 1} #{Time.now.utc.to_i}"
-                  line << " #{Base64.encode64(n[:message])}" if n[:message]
-                  post_data(line)
-                else
-                  log :info, "Ignored instrumentation: #{n[:name]} #{n}"
                 end
               end
+              post_data(data.join("\n")) unless data.empty?
             rescue => e
               log :info, "Instrumentation Error! #{e.inspect}"
             end
@@ -69,7 +71,12 @@ module Errplane
 
   if defined?(ActiveSupport::Notifications) #&& Errplane.configuration.instrumentation_enabled?
     ActiveSupport::Notifications.subscribe do |name, start, finish, id, payload|
-      h = { :name => name, :start => start, :finish => finish, :nid => id, :payload => payload }
+      h = { :name => name,
+            :start => start,
+            :finish => finish,
+            :nid => id,
+            :payload => payload,
+            :source => "active_support"}
       Errplane::Relay.queue.push h
     end
   end
