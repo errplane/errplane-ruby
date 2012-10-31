@@ -55,7 +55,7 @@ module Errplane
                       line << "db #{n[:payload][:db_runtime].ceil} #{n[:finish].utc.to_i }"
                     end
                   when "custom"
-                    s = "#{n[:name]} #{n[:value] || 1} #{Time.now.utc.to_i}"
+                    s = "#{n[:name]} #{n[:value] || 1} #{n[:timestamp]}"
                     s << " #{Base64.encode64(n[:message])}" if n[:message]
                     line << s
                   end

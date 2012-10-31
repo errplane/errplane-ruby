@@ -32,7 +32,11 @@ module Errplane
     end
 
     def report(name, params = {})
-      Errplane::Relay.queue.push({:name => name, :source => "custom"}.merge(params))
+      Errplane::Relay.queue.push({
+        :name => name,
+        :source => "custom",
+        :timestamp => current_timestamp
+      }.merge(params))
     end
 
     def time(name = nil)
@@ -42,6 +46,7 @@ module Errplane
       Errplane::Relay.queue.push({
         :name => "timed_blocks/#{(name || Socket.gethostname)}",
         :source => "custom",
+        :timestamp => current_timestamp,
         :value => elapsed_time*1000
       })
     end
@@ -75,6 +80,10 @@ module Errplane
       rescue => e
         log :info, "[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}"
       end
+    end
+
+    def current_timestamp
+      Time.now.utc.to_i
     end
 
     def ignorable_exception?(e)
