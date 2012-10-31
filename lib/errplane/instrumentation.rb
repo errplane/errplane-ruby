@@ -20,11 +20,15 @@ module Errplane
     class << self
       include Errplane::Logger
 
+      def indent_lines(lines, num)
+        lines.split("\n").map {|line| (" " * num) + line}.join("\n")
+      end
+
       def post_data(data)
         if Errplane.configuration.ignore_current_environment?
           log :debug, "Current environment is ignored, skipping POST."
         else
-          log :info, "Posting data:\n#{data}"
+          log :info, "Posting data:\n#{indent_lines(data, 13)}"
           http = Net::HTTP.new("api1.errplane.com", "8086")
           url = "/api/v2/time_series/applications/#{Errplane.configuration.application_id}/environments/#{Errplane.configuration.rails_environment}?api_key=ignored"
           response = http.post(url, data)
