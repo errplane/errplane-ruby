@@ -39,16 +39,22 @@ module Errplane
       }.merge(params))
     end
 
+    def heartbeat(name, interval)
+      log :debug, "Starting heartbeat '#{name}' on a #{interval} second interval."
+      Thread.new do
+        while true do
+          log :debug, "Sleeping '#{name}' for #{interval} seconds."
+          sleep(interval)
+          report(name)
+        end
+      end
+    end
+
     def time(name = nil)
       start_time = Time.now
       yield
       elapsed_time = Time.now - start_time
-      Errplane::Relay.queue.push({
-        :name => "timed_blocks/#{(name || Socket.gethostname)}",
-        :source => "custom",
-        :timestamp => current_timestamp,
-        :value => elapsed_time*1000
-      })
+      report("timed_blocks/#{(name || Socket.gethostname)}", :value => (elapsed_time*1000).ceil)
     end
 
     def transmit_unless_ignorable(e, env)
