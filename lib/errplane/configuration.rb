@@ -29,7 +29,7 @@ module Errplane
       :app_host => "app.errplane.com",
       :ignored_exceptions => %w{ActiveRecord::RecordNotFound
                                 ActionController::RoutingError},
-      :ignored_environments => %w{development test cucumber selenium},
+      :ignored_environments => %w{test cucumber selenium},
       :ignored_user_agents => %w{GoogleBot},
       :backtrace_filters => [
         lambda { |line| line.gsub(/^\.\//, "") },
