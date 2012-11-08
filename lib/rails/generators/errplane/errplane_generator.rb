@@ -3,9 +3,10 @@ require 'rails/generators'
 class ErrplaneGenerator < Rails::Generators::Base
   desc "Description:\n  This creates a Rails initializer for Errplane."
 
+  application_name = Rails.application.class.parent_name
   api_key = ARGV.last
   http = Net::HTTP.new("localhost", "3000")
-  url = "/api/v1/applications?api_key=#{api_key}&name=NewApplication"
+  url = "/api/v1/applications?api_key=#{api_key}&name=#{application_name}"
   response = http.post(url, nil)
   @application = JSON.parse(response.body)
 
