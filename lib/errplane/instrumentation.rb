@@ -30,7 +30,7 @@ module Errplane
         else
           log :info, "Posting data:\n#{indent_lines(data, 13)}"
           http = Net::HTTP.new("api1.errplane.com", "8086")
-          url = "/api/v2/time_series/applications/#{Errplane.configuration.application_id}/environments/#{Errplane.configuration.rails_environment}?api_key=ignored"
+          url = "/api/v2/time_series/applications/#{Errplane.configuration.application_id}/environments/#{Errplane.configuration.rails_environment}?api_key=#{Errplane.configuration.api_key}"
           response = http.post(url, data)
           log :info, "Posting to: #{url}"
           log :info, "Response code: #{response.code}"
