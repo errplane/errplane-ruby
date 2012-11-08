@@ -3,6 +3,12 @@ require 'rails/generators'
 class ErrplaneGenerator < Rails::Generators::Base
   desc "Description:\n  This creates a Rails initializer for Errplane."
 
+  api_key = ARGV.last
+  http = Net::HTTP.new("localhost", "3000")
+  url = "/api/v1/applications?api_key=#{api_key}&name=NewApplication"
+  response = http.post(url, nil)
+  @application = JSON.parse(response.body)
+
   source_root File.expand_path('../templates', __FILE__)
   argument :api_key,
     :required => true,
@@ -10,7 +16,7 @@ class ErrplaneGenerator < Rails::Generators::Base
     :description => "API key for your Errplane organization"
   argument :application_id,
     :required => false,
-    :default => SecureRandom.hex(4),
+    :default => @application["key"],
     :type => :string,
     :description => "Identifier for this application (Leave blank and a new one will be generated for you)"
 
