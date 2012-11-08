@@ -7,7 +7,7 @@ class ErrplaneGenerator < Rails::Generators::Base
     puts "Contacting Errplane API"
     application_name = Rails.application.class.parent_name
     api_key = ARGV.last
-    http = Net::HTTP.new("localhost", "3000")
+    http = Net::HTTP.new("app.errplane.com", "80")
     url = "/api/v1/applications?api_key=#{api_key}&name=#{application_name}"
     response = http.post(url, nil)
     @application = JSON.parse(response.body)
