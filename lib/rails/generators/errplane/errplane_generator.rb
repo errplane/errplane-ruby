@@ -3,12 +3,23 @@ require 'rails/generators'
 class ErrplaneGenerator < Rails::Generators::Base
   desc "Description:\n  This creates a Rails initializer for Errplane."
 
-  application_name = Rails.application.class.parent_name
-  api_key = ARGV.last
-  http = Net::HTTP.new("localhost", "3000")
-  url = "/api/v1/applications?api_key=#{api_key}&name=#{application_name}"
-  response = http.post(url, nil)
-  @application = JSON.parse(response.body)
+  begin
+    puts "Contacting Errplane API"
+    application_name = Rails.application.class.parent_name
+    api_key = ARGV.last
+    http = Net::HTTP.new("localhost", "3000")
+    url = "/api/v1/applications?api_key=#{api_key}&name=#{application_name}"
+    response = http.post(url, nil)
+    @application = JSON.parse(response.body)
+
+    unless response.is_a?(Net::HTTPSuccess)
+      raise "The Errplane API returned an error: #{response.inspect}"
+    end
+  rescue => e
+    puts "We ran into a problem creating your application via the API!"
+    puts "If this issue persists, contact us at support@errplane.com with the following details:"
+    puts "#{e.class}: #{e.message}"
+  end
 
   source_root File.expand_path('../templates', __FILE__)
   argument :api_key,
