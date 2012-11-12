@@ -29,89 +29,78 @@ module Errplane
           log :debug, "Current environment is ignored, skipping POST."
         else
           log :info, "Posting data:\n#{indent_lines(data, 13)}"
-          http = Net::HTTP.new("api1.errplane.com", "8086")
           url = "/api/v2/time_series/applications/#{Errplane.configuration.application_id}/environments/#{Errplane.configuration.rails_environment}?api_key=#{Errplane.configuration.api_key}"
           log :info, "Posting to: #{url}"
 
           retry_count = 5
           begin
+            http = Net::HTTP.new("api.errplane.com", "80")
             response = http.post(url, data)
             log :info, "Response code: #{response.code}"
           rescue => e
             retry_count -= 1
             unless retry_count.zero?
               log :info, "POST failed, retrying."
-              sleep 3
+              sleep 10
               retry
             end
-            log :info, "Unable to POST after 5 retries, aborting!"
+            log :info, "Unable to POST after retrying, aborting!"
           end
         end
       end
 
-      def spawn_thread()
+      def spawn_sweeper_thread()
+        log :debug, "Spawning background sweeper thread."
         Thread.new do
-          log :debug, "Spawning background thread."
           while true
-            log :debug, "Checking background queue."
-            sleep 5
+            sleep Errplane.configuration.queue_sweeper_polling_interval
+            while Errplane::Relay.queue.size > Errplane.configuration.queue_maximum_depth
+              Errplane::Relay.queue.pop
+            end
+          end
+        end
+      end
+      def spawn_worker_threads()
+        Errplane.configuration.queue_worker_threads.times do
+          log :debug, "Spawning background worker thread."
+          Thread.new do
+            while true
+              log :debug, "Checking background queue."
+              sleep Errplane.configuration.queue_worker_polling_interval
 
-            data = [].tap do |line|
-              while !Errplane::Relay.queue.empty?
-                log :debug, "Found data in the queue."
-                n = Errplane::Relay.queue.pop
+              data = [].tap do |line|
+                while !Errplane::Relay.queue.empty?
+                  log :debug, "Found data in the queue."
+                  n = Errplane::Relay.queue.pop
 
-                begin
-                  case n[:source]
-                  when "active_support"
-                    case n[:name].to_s
-                    when "process_action.action_controller"
-                      timediff = n[:finish] - n[:start]
-                      line << "controllers/#{n[:payload][:controller]}/#{n[:payload][:action]} #{(timediff*1000).ceil} #{n[:finish].utc.to_i}"
-                      line << "views #{n[:payload][:view_runtime].ceil} #{n[:finish].utc.to_i }"
-                      line << "db #{n[:payload][:db_runtime].ceil} #{n[:finish].utc.to_i }"
+                  begin
+                    case n[:source]
+                    when "active_support"
+                      case n[:name].to_s
+                      when "process_action.action_controller"
+                        timediff = n[:finish] - n[:start]
+                        line << "controllers/#{n[:payload][:controller]}/#{n[:payload][:action]} #{(timediff*1000).ceil} #{n[:finish].utc.to_i}"
+                        line << "views #{n[:payload][:view_runtime].ceil} #{n[:finish].utc.to_i }"
+                        line << "db #{n[:payload][:db_runtime].ceil} #{n[:finish].utc.to_i }"
+                      end
+                    when "exception"
+                      Errplane.transmitter.deliver n[:data], n[:url]
+                    when "custom"
+                      s = "#{n[:name]} #{n[:value] || 1} #{n[:timestamp]}"
+                      s << " #{Base64.encode64(n[:message])}" if n[:message]
+                      line << s
                     end
-                  when "exception"
-                    Errplane.transmitter.deliver n[:data], n[:url]
-                  when "custom"
-                    s = "#{n[:name]} #{n[:value] || 1} #{n[:timestamp]}"
-                    s << " #{Base64.encode64(n[:message])}" if n[:message]
-                    line << s
+                  rescue => e
+                    log :info, "Instrumentation Error! #{e.inspect}"
                   end
-                rescue
-                  log :info, "Instrumentation Error! #{e.inspect}"
                 end
               end
-            end
 
-            post_data(data.join("\n")) unless data.empty?
+              post_data(data.join("\n")) unless data.empty?
+            end
           end
         end
       end
     end
-  end
-
-  if defined?(ActiveSupport::Notifications) #&& Errplane.configuration.instrumentation_enabled?
-    ActiveSupport::Notifications.subscribe do |name, start, finish, id, payload|
-      h = { :name => name,
-            :start => start,
-            :finish => finish,
-            :nid => id,
-            :payload => payload,
-            :source => "active_support"}
-      Errplane::Relay.queue.push h
-    end
-  end
-
-  if defined?(PhusionPassenger)
-    PhusionPassenger.on_event(:starting_worker_process) do |forked|
-      if forked
-        Errplane::Relay.initialize
-        Errplane::Instrumentation.spawn_thread()
-      end
-    end
-  else
-    Errplane::Relay.initialize
-    Errplane::Instrumentation.spawn_thread()
   end
 end

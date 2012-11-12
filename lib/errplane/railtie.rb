@@ -99,6 +99,32 @@ module Errplane
         require 'errplane/rails/middleware/hijack_render_exception'
         ::ActionDispatch::ShowExceptions.send(:include, Errplane::Rails::Middleware::HijackRenderException)
       end
+
+      if defined?(ActiveSupport::Notifications) && Errplane.configuration.instrumentation_enabled?
+        ActiveSupport::Notifications.subscribe do |name, start, finish, id, payload|
+          h = { :name => name,
+                :start => start,
+                :finish => finish,
+                :nid => id,
+                :payload => payload,
+                :source => "active_support"}
+          Errplane::Relay.queue.push h
+        end
+      end
+
+      if defined?(PhusionPassenger)
+        PhusionPassenger.on_event(:starting_worker_process) do |forked|
+          if forked
+            Errplane::Relay.initialize
+            Errplane::Instrumentation.spawn_worker_threads()
+            Errplane::Instrumentation.spawn_sweeper_thread()
+          end
+        end
+      else
+        Errplane::Relay.initialize
+        Errplane::Instrumentation.spawn_worker_threads()
+        Errplane::Instrumentation.spawn_sweeper_thread()
+      end
     end
   end
 end

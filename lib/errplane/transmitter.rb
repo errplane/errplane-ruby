@@ -18,7 +18,8 @@ module Errplane
     end
 
     def enqueue(black_box)
-      url = "/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/#{Errplane.configuration.rails_environment}#{"/deploy" if deployment}?api_key=#{Errplane.configuration.api_key}"
+      log :info, "Adding exception to the queue."
+      url = "/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/#{Errplane.configuration.rails_environment}?api_key=#{Errplane.configuration.api_key}"
       exception = { :data => black_box.to_json,
                     :url => url,
                     :source => "exception" }
@@ -38,9 +39,9 @@ module Errplane
 
       @last_response = response
       if response.is_a?(Net::HTTPSuccess)
-        log :info, "Request Succeeded: #{response.inspect}"
+        log :info, "Exception POST Succeeded: #{response.inspect}"
       else
-        log :error, "Request Failed: #{response.inspect}"
+        log :error, "Exception POST Failed: #{response.inspect}"
       end
     end
 
