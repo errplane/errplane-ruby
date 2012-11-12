@@ -31,9 +31,21 @@ module Errplane
           log :info, "Posting data:\n#{indent_lines(data, 13)}"
           http = Net::HTTP.new("api1.errplane.com", "8086")
           url = "/api/v2/time_series/applications/#{Errplane.configuration.application_id}/environments/#{Errplane.configuration.rails_environment}?api_key=#{Errplane.configuration.api_key}"
-          response = http.post(url, data)
           log :info, "Posting to: #{url}"
-          log :info, "Response code: #{response.code}"
+
+          retry_count = 5
+          begin
+            response = http.post(url, data)
+            log :info, "Response code: #{response.code}"
+          rescue => e
+            retry_count -= 1
+            unless retry_count.zero?
+              log :info, "POST failed, retrying."
+              sleep 3
+              retry
+            end
+            log :info, "Unable to POST after 5 retries, aborting!"
+          end
         end
       end
 
@@ -43,12 +55,13 @@ module Errplane
           while true
             log :debug, "Checking background queue."
             sleep 5
-            begin
-              data = [].tap do |line|
-                while !Errplane::Relay.queue.empty?
-                  log :debug, "Found data in the queue."
-                  n = Errplane::Relay.queue.pop
 
+            data = [].tap do |line|
+              while !Errplane::Relay.queue.empty?
+                log :debug, "Found data in the queue."
+                n = Errplane::Relay.queue.pop
+
+                begin
                   case n[:source]
                   when "active_support"
                     case n[:name].to_s
@@ -65,12 +78,13 @@ module Errplane
                     s << " #{Base64.encode64(n[:message])}" if n[:message]
                     line << s
                   end
+                rescue
+                  log :info, "Instrumentation Error! #{e.inspect}"
                 end
               end
-              post_data(data.join("\n")) unless data.empty?
-            rescue => e
-              log :info, "Instrumentation Error! #{e.inspect}"
             end
+
+            post_data(data.join("\n")) unless data.empty?
           end
         end
       end
