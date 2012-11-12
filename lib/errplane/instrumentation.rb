@@ -58,6 +58,8 @@ module Errplane
                       line << "views #{n[:payload][:view_runtime].ceil} #{n[:finish].utc.to_i }"
                       line << "db #{n[:payload][:db_runtime].ceil} #{n[:finish].utc.to_i }"
                     end
+                  when "exception"
+                    Errplane.transmitter.deliver n[:data], n[:url]
                   when "custom"
                     s = "#{n[:name]} #{n[:value] || 1} #{n[:timestamp]}"
                     s << " #{Base64.encode64(n[:message])}" if n[:message]

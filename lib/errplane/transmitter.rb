@@ -17,6 +17,33 @@ module Errplane
       @last_response = nil
     end
 
+    def enqueue(black_box)
+      url = "/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/#{Errplane.configuration.rails_environment}#{"/deploy" if deployment}?api_key=#{Errplane.configuration.api_key}"
+      exception = { :data => black_box.to_json,
+                    :url => url,
+                    :source => "exception" }
+
+      Errplane::Relay.queue.push exception
+    end
+
+    def deliver(data, url)
+      http = initialize_http_connection
+      response = begin
+                   log :info, "URL: #{url}"
+                   log :info, "Data: #{data.inspect}"
+                   http.post(url, data)
+                 rescue *HTTP_ERRORS => e
+                   log :error, "HTTP error contacting Errplane API! #{e.class}: #{e.message}"
+                 end
+
+      @last_response = response
+      if response.is_a?(Net::HTTPSuccess)
+        log :info, "Request Succeeded: #{response.inspect}"
+      else
+        log :error, "Request Failed: #{response.inspect}"
+      end
+    end
+
     def relay(black_box, deployment = false)
       http = initialize_http_connection
       data = black_box.to_json

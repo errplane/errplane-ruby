@@ -65,7 +65,7 @@ module Errplane
         log :info, "Ignorable Exception? #{ignorable_exception?(e)}"
         log :info, "Environment: #{ENV.to_hash}"
 
-        transmitter.relay(black_box) unless ignorable_exception?(e)
+        transmitter.enqueue(black_box) unless ignorable_exception?(e)
       rescue => e
         log :info, "[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}"
       end
@@ -82,7 +82,7 @@ module Errplane
         log :info, "Transmitter: #{transmitter.inspect}"
         log :info, "Black Box: #{black_box.to_json}"
         log :info, "Environment: #{ENV.to_hash}"
-        transmitter.relay(black_box)
+        transmitter.enqueue(black_box)
       rescue => e
         log :info, "[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}"
       end
