@@ -4,18 +4,6 @@ require "uri"
 require "base64"
 
 module Errplane
-  class Relay
-    @@queue = Queue.new
-
-    def self.queue
-      return @@queue
-    end
-
-    def self.initialize
-      @@queue = Queue.new
-    end
-  end
-
   class Instrumentation
     class << self
       include Errplane::Logger
@@ -49,17 +37,6 @@ module Errplane
         end
       end
 
-      def spawn_sweeper_thread()
-        log :debug, "Spawning background sweeper thread."
-        Thread.new do
-          while true
-            sleep Errplane.configuration.queue_sweeper_polling_interval
-            while Errplane::Relay.queue.size > Errplane.configuration.queue_maximum_depth
-              Errplane::Relay.queue.pop
-            end
-          end
-        end
-      end
       def spawn_worker_threads()
         Errplane.configuration.queue_worker_threads.times do
           log :debug, "Spawning background worker thread."
@@ -69,9 +46,9 @@ module Errplane
               sleep Errplane.configuration.queue_worker_polling_interval
 
               data = [].tap do |line|
-                while !Errplane::Relay.queue.empty?
+                while !Errplane.queue.empty?
                   log :debug, "Found data in the queue."
-                  n = Errplane::Relay.queue.pop
+                  n = Errplane.queue.pop
 
                   begin
                     case n[:source]

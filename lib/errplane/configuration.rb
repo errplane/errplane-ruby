@@ -26,7 +26,6 @@ module Errplane
 
     attr_accessor :queue_worker_threads
     attr_accessor :queue_worker_polling_interval
-    attr_accessor :queue_sweeper_polling_interval
     attr_accessor :queue_maximum_depth
     attr_accessor :queue_maximum_post
 
@@ -64,7 +63,6 @@ module Errplane
       @instrumentation_enabled = true
       @queue_worker_threads = 3
       @queue_worker_polling_interval = 5
-      @queue_sweeper_polling_interval = 0.25
       @queue_maximum_depth = 10_000
       @queue_maximum_post = 500
     end

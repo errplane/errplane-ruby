@@ -108,22 +108,18 @@ module Errplane
                 :nid => id,
                 :payload => payload,
                 :source => "active_support"}
-          Errplane::Relay.queue.push h
+          Errplane.queue.push_safely(h)
         end
       end
 
       if defined?(PhusionPassenger)
         PhusionPassenger.on_event(:starting_worker_process) do |forked|
           if forked
-            Errplane::Relay.initialize
             Errplane::Instrumentation.spawn_worker_threads()
-            Errplane::Instrumentation.spawn_sweeper_thread()
           end
         end
       else
-        Errplane::Relay.initialize
         Errplane::Instrumentation.spawn_worker_threads()
-        Errplane::Instrumentation.spawn_sweeper_thread()
       end
     end
   end

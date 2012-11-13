@@ -2,6 +2,7 @@ require "net/http"
 require "net/https"
 require "rubygems"
 require "socket"
+require "thread"
 
 require "json" unless Hash.respond_to?(:to_json)
 
@@ -15,12 +16,26 @@ require "errplane/rack"
 
 require "errplane/railtie" if defined?(Rails::Railtie)
 
+class SafeQueue < Queue
+  attr_accessor :max_depth
+
+  def initialize(max_depth = 10_000)
+    @max_depth = max_depth
+    super()
+  end
+
+  def push_safely(data)
+    push(data) if size < @max_depth
+  end
+end
+
 module Errplane
   class << self
     include Logger
 
     attr_writer :configuration
     attr_accessor :transmitter
+    attr_accessor :queue
 
     def configure(silent = false)
       yield(configuration)
@@ -31,8 +46,12 @@ module Errplane
       @configuration ||= Configuration.new
     end
 
+    def queue
+      @queue ||= SafeQueue.new(configuration.queue_maximum_depth)
+    end
+
     def report(name, params = {})
-      Errplane::Relay.queue.push({
+      Errplane.queue.push_safely({
         :name => name,
         :source => "custom",
         :timestamp => current_timestamp

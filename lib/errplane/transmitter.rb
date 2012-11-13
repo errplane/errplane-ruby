@@ -24,7 +24,7 @@ module Errplane
                     :url => url,
                     :source => "exception" }
 
-      Errplane::Relay.queue.push exception
+      Errplane.queue.push_safely(exception)
     end
 
     def deliver(data, url)
