@@ -14,26 +14,25 @@ function build_version() {
   BUNDLE_GEMFILE=gemfiles/Gemfile.rails-$1 bundle exec rake -t spec
 }
 
-function versions() {
+function build_versions() {
   build_version "3.2.x"
   build_version "3.1.x"
   build_version "3.0.x"
-  build_version "2.3.x"
 }
 
-function use_ruby() {
+function build_with_ruby() {
   rvm use ruby-$1@errplane_gem --create
-  versions
+  build_versions
 }
 
-function run() {
-  use_ruby "1.9.3-p194"
-  use_ruby "1.9.2-p290"
-  use_ruby "1.8.7-p357"
+function build() {
+  build_with_ruby "1.9.3-p194"
+  build_with_ruby "1.9.2-p290"
+  build_with_ruby "1.8.7-p357"
 }
 
 function clean() {
   rvm gemset empty errplane_gem --force
 }
 
-run
+build
