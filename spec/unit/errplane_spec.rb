@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe Errplane do
   before do
+    Errplane.configure { |config| config.ignored_environments = [] }
+
     FakeWeb.last_request = nil
     FakeWeb.clean_registry
 
@@ -34,17 +36,18 @@ describe Errplane do
 
   describe 'rescue' do
     it "should transmit an exception when passed" do
-      Errplane.configure { |config| config.ignored_environments = [] }
+      Errplane.queue.clear
 
-      FakeWeb.register_uri(:post, @request_url, :body => "", :status => ["200", "OK"])
+      Errplane.configure do |config|
+        config.ignored_environments = []
+        config.instrumentation_enabled = false
+      end
 
       Errplane.rescue do
         raise ArgumentError.new('wrong')
       end
 
-      FakeWeb.last_request.should_not be_nil
-      FakeWeb.last_request.method.should == "POST"
-      FakeWeb.last_request.path.should == @request_path
+      Errplane.queue.size.should == 1
     end
 
     it "should also raise the exception when in an ignored environment" do
@@ -59,20 +62,15 @@ describe Errplane do
   end
 
   describe "rescue_and_reraise" do
-    before do
-      Errplane.configure { |config| config.ignored_environments = [] }
-    end
-
     it "should transmit an exception when passed" do
-      FakeWeb.register_uri(:post, @request_url, :body => "", :status => ["200", "OK"])
+      Errplane.configure { |config| config.ignored_environments = [] }
+      Errplane.queue.clear
 
       expect {
         Errplane.rescue_and_reraise { raise ArgumentError.new('wrong') }
       }.to raise_error(ArgumentError)
 
-      FakeWeb.last_request.should_not be_nil
-      FakeWeb.last_request.method.should == "POST"
-      FakeWeb.last_request.path.should == @request_path
+      Errplane.queue.size.should == 1
     end
   end
 end

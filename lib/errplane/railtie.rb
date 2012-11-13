@@ -100,15 +100,17 @@ module Errplane
         ::ActionDispatch::ShowExceptions.send(:include, Errplane::Rails::Middleware::HijackRenderException)
       end
 
-      if defined?(ActiveSupport::Notifications) && Errplane.configuration.instrumentation_enabled?
+      if defined?(ActiveSupport::Notifications)
         ActiveSupport::Notifications.subscribe do |name, start, finish, id, payload|
-          h = { :name => name,
-                :start => start,
-                :finish => finish,
-                :nid => id,
-                :payload => payload,
-                :source => "active_support"}
-          Errplane.queue.push_safely(h)
+          if Errplane.configuration.instrumentation_enabled?
+            h = { :name => name,
+                  :start => start,
+                  :finish => finish,
+                  :nid => id,
+                  :payload => payload,
+                  :source => "active_support"}
+            Errplane.queue.push_safely(h)
+          end
         end
       end
 
