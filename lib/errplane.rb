@@ -9,25 +9,13 @@ require "json" unless Hash.respond_to?(:to_json)
 require "errplane/version"
 require "errplane/logger"
 require "errplane/black_box"
+require "errplane/queue"
 require "errplane/configuration"
 require "errplane/transmitter"
 require "errplane/backtrace"
 require "errplane/rack"
 
 require "errplane/railtie" if defined?(Rails::Railtie)
-
-class SafeQueue < Queue
-  attr_accessor :max_depth
-
-  def initialize(max_depth = 10_000)
-    @max_depth = max_depth
-    super()
-  end
-
-  def push_safely(data)
-    push(data) if size < @max_depth
-  end
-end
 
 module Errplane
   class << self
