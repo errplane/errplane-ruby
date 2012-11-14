@@ -17,7 +17,7 @@ module Errplane
     attr_accessor :ignored_environments
     attr_accessor :ignored_user_agents
     attr_accessor :backtrace_filters
-
+    attr_accessor :aggregated_exception_classes
     attr_accessor :environment_variables
 
     attr_accessor :instrumentation_enabled
@@ -58,6 +58,7 @@ module Errplane
       @ignored_environments = DEFAULTS[:ignored_environments].dup
       @ignored_user_agents = DEFAULTS[:ignored_user_agents].dup
       @backtrace_filters = DEFAULTS[:backtrace_filters].dup
+      @aggregated_exception_classes = []
       @debug = false
       @rescue_global_exceptions = false
       @instrumentation_enabled = true

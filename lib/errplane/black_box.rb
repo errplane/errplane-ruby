@@ -42,6 +42,9 @@ module Errplane
 
       payload[:request_data] = request_data if @controller || @action || !@params.blank?
       payload[:hash] = hash if hash
+      if Errplane.configuration.aggregated_exception_classes.include?(@exception.class.to_s)
+        payload[:hash] = Digest::SHA1.hexdigest(@exception.class.to_s)
+      end
 
       payload.to_json
     end
