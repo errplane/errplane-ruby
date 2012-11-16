@@ -116,12 +116,10 @@ module Errplane
 
       if defined?(PhusionPassenger)
         PhusionPassenger.on_event(:starting_worker_process) do |forked|
-          if forked
-            Errplane::Instrumentation.spawn_worker_threads()
-          end
+          Errplane::Worker.spawn_threads() if forked
         end
       else
-        Errplane::Instrumentation.spawn_worker_threads()
+        Errplane::Worker.spawn_threads()
       end
     end
   end

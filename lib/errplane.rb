@@ -13,6 +13,7 @@ require "errplane/max_queue"
 require "errplane/configuration"
 require "errplane/transmitter"
 require "errplane/backtrace"
+require "errplane/worker"
 require "errplane/rack"
 
 require "errplane/railtie" if defined?(Rails::Railtie)
@@ -133,5 +134,4 @@ module Errplane
   end
 end
 
-require "errplane/instrumentation"
 require "errplane/sinatra" if defined?(Sinatra::Request)

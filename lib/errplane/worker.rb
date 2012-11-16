@@ -4,7 +4,7 @@ require "uri"
 require "base64"
 
 module Errplane
-  class Instrumentation
+  class Worker
     class << self
       include Errplane::Logger
 
@@ -37,7 +37,7 @@ module Errplane
         end
       end
 
-      def spawn_worker_threads()
+      def spawn_threads()
         Errplane.configuration.queue_worker_threads.times do
           log :debug, "Spawning background worker thread."
           Thread.new do
