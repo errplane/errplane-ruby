@@ -9,7 +9,7 @@ require "json" unless Hash.respond_to?(:to_json)
 require "errplane/version"
 require "errplane/logger"
 require "errplane/black_box"
-require "errplane/queue"
+require "errplane/max_queue"
 require "errplane/configuration"
 require "errplane/transmitter"
 require "errplane/backtrace"
@@ -35,11 +35,11 @@ module Errplane
     end
 
     def queue
-      @queue ||= SafeQueue.new(configuration.queue_maximum_depth)
+      @queue ||= MaxQueue.new(configuration.queue_maximum_depth)
     end
 
     def report(name, params = {})
-      Errplane.queue.push_safely({
+      Errplane.queue.push_or_discard({
         :name => name,
         :source => "custom",
         :timestamp => current_timestamp
