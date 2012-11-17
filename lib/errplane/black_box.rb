@@ -19,6 +19,7 @@ module Errplane
       @request_url = params[:request_url]
       @user_agent = params[:user_agent]
       @custom_data = params[:custom_data] || {}
+      @environment_variables = params[:environment_variables] || {}
     end
 
     def to_json
@@ -33,10 +34,10 @@ module Errplane
         :exception_class => @exception.class.to_s,
         :language => "Ruby",
         :language_version => "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}",
-        :environment_variables => ENV.to_hash,
         :reporter => reporter,
         :custom_data => @custom_data
       }
+      payload[:environment_variables] = @environment_variables
 
       Errplane.configuration.add_custom_exception_data(self)
 

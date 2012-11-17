@@ -19,6 +19,7 @@ module Errplane
     attr_accessor :backtrace_filters
     attr_accessor :aggregated_exception_classes
     attr_accessor :environment_variables
+    attr_writer   :include_environment_variables
 
     attr_accessor :instrumentation_enabled
     attr_accessor :debug
@@ -36,6 +37,7 @@ module Errplane
                                 ActionController::RoutingError},
       :ignored_environments => %w{test cucumber selenium},
       :ignored_user_agents => %w{GoogleBot},
+      :include_environment_variables => false,
       :backtrace_filters => [
         lambda { |line| line.gsub(/^\.\//, "") },
         lambda { |line|
@@ -58,6 +60,7 @@ module Errplane
       @ignored_environments = DEFAULTS[:ignored_environments].dup
       @ignored_user_agents = DEFAULTS[:ignored_user_agents].dup
       @backtrace_filters = DEFAULTS[:backtrace_filters].dup
+      @include_environment_variables = DEFAULTS[:include_environment_variables]
       @aggregated_exception_classes = []
       @debug = false
       @rescue_global_exceptions = false
@@ -70,6 +73,10 @@ module Errplane
 
     def debug?
       !!@debug
+    end
+
+    def include_environment_variables?
+      @include_environment_variables
     end
 
     def instrumentation_enabled?

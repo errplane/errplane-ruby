@@ -129,6 +129,7 @@ module Errplane
       e = e.continued_exception if e.respond_to?(:continued_exception)
       e = e.original_exception if e.respond_to?(:original_exception)
       opts = opts.merge(:exception => e)
+      opts[:environment_variables] = ENV.to_hash if configuration.include_environment_variables?
       black_box = BlackBox.new(opts)
     end
   end
