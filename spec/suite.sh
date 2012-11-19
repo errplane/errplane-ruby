@@ -18,6 +18,7 @@ function build_versions() {
   build_version "3.2.x"
   build_version "3.1.x"
   build_version "3.0.x"
+  build_version "2.3.x"
 }
 
 function build_with_ruby() {
