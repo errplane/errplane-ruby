@@ -20,6 +20,28 @@ module Errplane
         config.framework               = "Rails"
         config.framework_version       = ::Rails.version
       end
+
+      if defined?(ActiveSupport::Notifications)
+        ActiveSupport::Notifications.subscribe do |name, start, finish, id, payload|
+          if Errplane.configuration.instrumentation_enabled?
+            h = { :name => name,
+                  :start => start,
+                  :finish => finish,
+                  :nid => id,
+                  :payload => payload,
+                  :source => "active_support"}
+            Errplane.queue.push_or_discard(h)
+          end
+        end
+      end
+
+      if defined?(PhusionPassenger)
+        PhusionPassenger.on_event(:starting_worker_process) do |forked|
+          Errplane::Worker.spawn_threads() if forked
+        end
+      else
+        Errplane::Worker.spawn_threads()
+      end
     end
   end
 end
