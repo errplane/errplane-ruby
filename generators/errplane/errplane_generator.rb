@@ -9,6 +9,25 @@ class ErrplaneGenerator < Rails::Generator::Base
       puts "You must provide an API key using -k or --api-key."
       exit
     end
+
+    begin
+      puts "Contacting Errplane API"
+      application_name = "ApplicationName"
+      api_key = options[:api_key]
+      http = Net::HTTP.new("app.errplane.com", "80")
+      url = "/api/v1/applications?api_key=#{api_key}&name=#{application_name}"
+      response = http.post(url, nil)
+      @application = JSON.parse(response.body)
+
+      unless response.is_a?(Net::HTTPSuccess)
+        raise "The Errplane API returned an error: #{response.inspect}"
+      end
+    rescue => e
+      puts "We ran into a problem creating your application via the API!"
+      puts "If this issue persists, contact us at support@errplane.com with the following details:"
+      puts "#{e.class}: #{e.message}"
+    end
+
     record do |m|
       m.template "initializer.rb", "config/initializers/errplane.rb",
         :assigns => {
