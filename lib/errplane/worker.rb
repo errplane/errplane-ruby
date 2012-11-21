@@ -57,24 +57,28 @@ module Errplane
         data = []
 
         while !Errplane.queue.empty? && data.size < 200
-          log :debug, "Found data in the queue."
+          log :debug, "Found data in the queue!"
           n = Errplane.queue.pop
+          log :debug, n.inspect
 
           begin
             case n[:source]
             when "active_support"
               case n[:name].to_s
               when "process_action.action_controller"
-                timediff = n[:finish] - n[:start]
-                data << "controllers/#{n[:payload][:controller]}/#{n[:payload][:action]} #{(timediff*1000).ceil} #{n[:finish].utc.to_i}"
-                data << "views #{n[:payload][:view_runtime].ceil} #{n[:finish].utc.to_i }"
-                data << "db #{n[:payload][:db_runtime].ceil} #{n[:finish].utc.to_i }"
+                timestamp = n[:finish].utc.to_i
+                controller_runtime = ((n[:finish] - n[:start])*1000).ceil
+                view_runtime = (n[:payload][:view_runtime] || 0).ceil
+                db_runtime = (n[:payload][:db_runtime] || 0).ceil
+
+                data << "controllers/#{n[:payload][:controller]}/#{n[:payload][:action]} #{controller_runtime} #{timestamp}"
+                data << "views #{view_runtime} #{timestamp}"
+                data << "db #{db_runtime} #{timestamp}"
               end
             when "exception"
               Errplane.transmitter.deliver n[:data], n[:url]
             when "custom"
               line = "#{n[:name]} #{n[:value] || 1} #{n[:timestamp]}"
-              # adding the message in this way to ensure that the space between the timestamp and the base64 encoded part goes in.
               line = "#{line} #{Base64.encode64(n[:message]).strip}" if n[:message]
               data << line
             end
