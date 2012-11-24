@@ -3,6 +3,7 @@ require 'errplane'
 require 'errplane/rails/middleware/hijack_rescue_action_everywhere'
 require 'errplane/rails/air_traffic_controller'
 require 'errplane/rails/benchmarking'
+require 'errplane/rails/instrumentation'
 
 module Errplane
   module Rails
@@ -10,6 +11,7 @@ module Errplane
       ActionController::Base.send(:include, Errplane::Rails::AirTrafficController)
       ActionController::Base.send(:include, Errplane::Rails::Middleware::HijackRescueActionEverywhere)
       ActionController::Base.send(:include, Errplane::Rails::Benchmarking)
+      ActionController::Base.send(:include, Errplane::Rails::Instrumentation)
 
       ::Rails.configuration.middleware.insert_after 'ActionController::Failsafe', Errplane::Rack
 

@@ -90,6 +90,8 @@ module Errplane
       ActiveSupport.on_load(:action_controller) do
         require 'errplane/rails/air_traffic_controller'
         include Errplane::Rails::AirTrafficController
+        require 'errplane/rails/instrumentation'
+        include Errplane::Rails::Instrumentation
       end
 
       if defined?(::ActionDispatch::DebugExceptions)
