@@ -24,7 +24,7 @@ module Errplane
                     :url => url,
                     :source => "exception" }
 
-      Errplane.queue.push_or_discard(exception)
+      Errplane.queue.push(exception)
     end
 
     def deliver(data, url)

@@ -111,7 +111,7 @@ module Errplane
                   :nid => id,
                   :payload => payload,
                   :source => "active_support"}
-            Errplane.queue.push_or_discard(h)
+            Errplane.queue.push(h)
           end
         end
       end

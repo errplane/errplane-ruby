@@ -40,7 +40,7 @@ module Errplane
     end
 
     def report(name, params = {})
-      Errplane.queue.push_or_discard({
+      Errplane.queue.push({
         :name => name,
         :source => "custom",
         :timestamp => current_timestamp
