@@ -5,6 +5,9 @@ require "base64"
 
 module Errplane
   class Worker
+    MAX_POST_LINES = 200
+    POST_RETRIES = 5
+
     class << self
       include Errplane::Logger
 
@@ -20,7 +23,7 @@ module Errplane
           url = "/api/v2/time_series/applications/#{Errplane.configuration.application_id}/environments/#{Errplane.configuration.rails_environment}?api_key=#{Errplane.configuration.api_key}"
           log :debug, "Posting to: #{url}"
 
-          retry_count = 5
+          retry_count = POST_RETRIES
           begin
             http = Net::HTTP.new("api.errplane.com", "80")
             response = http.post(url, data)
@@ -38,28 +41,27 @@ module Errplane
       end
 
       def spawn_threads()
-        Errplane.configuration.queue_worker_threads.times do
-          log :debug, "Spawning background worker thread."
+        Errplane.configuration.queue_worker_threads.times do |thread_num|
+          log :debug, "Spawning background worker thread #{thread_num}."
 
           Thread.new do
             while true
               sleep Errplane.configuration.queue_worker_polling_interval
-              check_background_queue
+              check_background_queue(thread_num)
             end
           end
 
         end
       end
 
-      def check_background_queue
-        log :debug, "Checking background queue."
+      def check_background_queue(thread_num = 0)
+        log :debug, "Checking background queue on thread #{thread_num} (#{Thread.list.count - 1} active)"
 
         data = []
 
-        while !Errplane.queue.empty? && data.size < 200
-          log :debug, "Found data in the queue!"
-          n = Errplane.queue.pop
-          log :debug, n.inspect
+        while data.size < MAX_POST_LINES && !Errplane.queue.empty?
+          n = Errplane.queue.pop(true) rescue next;
+          log :debug, "Found data in the queue! (#{n[:name]})"
 
           begin
             case n[:source]
