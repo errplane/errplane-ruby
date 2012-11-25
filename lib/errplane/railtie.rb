@@ -103,7 +103,7 @@ module Errplane
       end
 
       if defined?(ActiveSupport::Notifications)
-        ActiveSupport::Notifications.subscribe do |name, start, finish, id, payload|
+        ActiveSupport::Notifications.subscribe "process_action.action_controller" do |name, start, finish, id, payload|
           if Errplane.configuration.instrumentation_enabled?
             h = { :name => name,
                   :start => start,
