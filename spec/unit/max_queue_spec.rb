@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Errplane::MaxQueue do
-  it "should inherit from SizedQueue" do
-    Errplane::MaxQueue.new(1).should be_a(SizedQueue)
+  it "should inherit from Queue" do
+    Errplane::MaxQueue.new.should be_a(Queue)
   end
 
   context "#new" do
