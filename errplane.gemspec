@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Todd Persen"]
   s.email       = ["todd@errplane.com"]
   s.homepage    = "http://errplane.com"
-  s.summary     = %q{Rails exception reporting for Errplane.}
-  s.description = %q{This gem provides exception reporting with Errplane for Rails 3.x applications.}
+  s.summary     = %q{Rails-based instrumentation library for Errplane.}
+  s.description = %q{This gem provides implements instrumentation with Errplane for Rails 3.x applications.}
 
   s.rubyforge_project = "errplane"
 
@@ -22,8 +22,8 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'json'
 
-  s.add_dependency 'activesupport', ['>= 2.3.14']
-  s.add_dependency 'actionpack', ['>= 2.3.14']
+  s.add_dependency 'activesupport', ['>= 2.3.4']
+  s.add_dependency 'actionpack', ['>= 2.3.4']
   s.add_development_dependency 'bundler', ['>= 1.0.0']
   s.add_development_dependency 'fakeweb', ['>= 0']
   s.add_development_dependency 'guard', ['>= 0']
