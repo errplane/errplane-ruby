@@ -13,8 +13,6 @@ module Errplane
 
           Errplane.configure do |config|
             config.ignored_environments = []
-            config.queue_worker_threads = 1
-            config.queue_worker_polling_interval = 0.5
           end
 
           class ::ErrplaneSampleException < Exception; end;
@@ -43,7 +41,11 @@ module Errplane
           puts "Attempting to raise exception via HTTP.."
           response = ::Rails.application.call(env)
 
-          sleep 1
+          10.times do
+            sleep 1
+            break unless Errplane.transmitter.last_response.nil?
+          end
+
           if response.try(:first) == 500
             if Errplane.transmitter.last_response.nil?
               puts "Uh oh. Your app threw an exception, but we didn't get a response. Check your network connection and try again."
