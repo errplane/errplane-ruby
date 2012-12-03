@@ -46,5 +46,24 @@ describe Errplane::BlackBox do
       json["hash"].should == "some_hash"
       json["custom_data"]["extra_info"].should == "blah"
     end
+
+    describe "environment variables" do
+      it "should be filtered based on the contents of environment_variable_filters" do
+        Errplane.configure do |config|
+          config.environment_variable_filters = [/password/i]
+        end
+
+        black_box = Errplane::BlackBox.new(
+          :exception => @exception,
+          :environment_variables => {
+            "IMPORTANT_PASSWORD" => "sesame",
+            "EDITOR" => "vim"
+        })
+
+        json = JSON.parse(black_box.to_json)
+        json["environment_variables"].size.should == 1
+        json["environment_variables"].should == {"EDITOR" => "vim"}
+      end
+    end
   end
 end
