@@ -37,7 +37,10 @@ module Errplane
         :reporter => reporter,
         :custom_data => @custom_data
       }
-      payload[:environment_variables] = @environment_variables
+
+      payload[:environment_variables] = @environment_variables.reject do |env|
+        Errplane.configuration.environment_variable_filters.any? { |filter| env =~ filter }
+      end
 
       Errplane.configuration.add_custom_exception_data(self)
 
