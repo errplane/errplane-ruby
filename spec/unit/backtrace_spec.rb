@@ -30,6 +30,27 @@ describe Errplane::Backtrace do
     end
   end
 
+  context "nil backtrace" do
+    before do
+      # Exception.new.backtrace == nil
+      @raw_backtrace = nil
+
+      @backtrace = Errplane::Backtrace.new(@raw_backtrace)
+    end
+
+    it "should accept an exception into the initializer" do
+      @backtrace.lines.should be_empty
+      @backtrace.lines.count.should == 0
+    end
+
+    describe "#to_a" do
+      it "should return an array of lines" do
+        @backtrace.to_a.is_a?(Array).should be_true
+      end
+    end
+
+  end
+
   describe "backtrace filters" do
     before do
       Errplane.configure do |config|

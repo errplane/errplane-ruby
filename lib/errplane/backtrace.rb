@@ -1,3 +1,5 @@
+require 'active_support/core_ext/array/wrap'
+
 module Errplane
   class Backtrace
     class Line
@@ -23,7 +25,7 @@ module Errplane
     attr_reader :lines
 
     def initialize(backtrace)
-      @lines = backtrace.each.collect do |line|
+      @lines = Array.wrap(backtrace).each.collect do |line|
         Errplane.configuration.backtrace_filters.each do |filter|
           line = filter.call(line)
         end
