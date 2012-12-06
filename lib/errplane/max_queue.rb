@@ -11,7 +11,7 @@ module Errplane
     end
 
     def push(obj)
-      super if @que.length < @max
+      super if length < @max
     end
   end
 end
