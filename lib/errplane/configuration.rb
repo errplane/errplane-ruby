@@ -39,7 +39,8 @@ module Errplane
       :ignored_user_agents => %w{GoogleBot},
       :environment_variable_filters => [
         /password/i,
-        /key/i
+        /key/i,
+        /secret/i
       ],
       :backtrace_filters => [
         lambda { |line| line.gsub(/^\.\//, "") },
