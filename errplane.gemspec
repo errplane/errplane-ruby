@@ -13,9 +13,9 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = "errplane"
 
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.files         = Dir.glob('lib/**/*.rb') + %w(README.md)
+  s.test_files    = Dir.glob('test/**/*.rb') + Dir.glob('spec/**/*.rb') + Dir.glob('features/**/*.rb')
+  s.executables   = Dir.glob('bin/**/*.rb').map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
   s.licenses = ['MIT']
