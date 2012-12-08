@@ -40,11 +40,13 @@ module Errplane
     end
 
     def report(name, params = {})
-      Errplane.queue.push({
-        :name => name,
-        :source => "custom",
-        :timestamp => current_timestamp
-      }.merge(params))
+      unless configuration.ignored_reports.find{ |msg| /#{msg}/ =~ name  }
+        Errplane.queue.push({
+                                :name => name,
+                                :source => "custom",
+                                :timestamp => current_timestamp
+                            }.merge(params))
+      end
     end
 
     def heartbeat(name, interval)
@@ -82,10 +84,10 @@ module Errplane
     def transmit(e, env = {})
       begin
         black_box = if e.is_a?(String)
-          assemble_black_box_for(Exception.new(e), env)
-        else
-          assemble_black_box_for(e, env)
-        end
+                      assemble_black_box_for(Exception.new(e), env)
+                    else
+                      assemble_black_box_for(e, env)
+                    end
 
         log :info, "Transmitter: #{transmitter.inspect}"
         log :info, "Black Box: #{black_box.to_json}"
@@ -101,7 +103,7 @@ module Errplane
     end
 
     def ignorable_exception?(e)
-      configuration.ignore_current_environment? || configuration.ignored_exceptions.include?(e.class.to_s)
+      configuration.ignore_current_environment? || !!configuration.ignored_exception_messages.find{ |msg| /.*#{msg}.*/ =~ e.message  } || configuration.ignored_exceptions.include?(e.class.to_s)
     end
 
     def rescue(&block)

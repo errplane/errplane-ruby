@@ -38,8 +38,8 @@ module Errplane
         :custom_data => @custom_data
       }
 
-      payload[:environment_variables] = @environment_variables.reject do |env|
-        Errplane.configuration.environment_variable_filters.any? { |filter| env =~ filter }
+      payload[:environment_variables] = @environment_variables.reject do |k,v|
+        Errplane.configuration.environment_variable_filters.any? { |filter| k =~ filter }
       end
 
       Errplane.configuration.add_custom_exception_data(self)
