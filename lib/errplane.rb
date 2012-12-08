@@ -42,10 +42,10 @@ module Errplane
     def report(name, params = {})
       unless configuration.ignored_reports.find{ |msg| /#{msg}/ =~ name  }
         Errplane.queue.push({
-                                :name => name,
-                                :source => "custom",
-                                :timestamp => current_timestamp
-                            }.merge(params))
+          :name => name,
+          :source => "custom",
+          :timestamp => current_timestamp
+        }.merge(params))
       end
     end
 

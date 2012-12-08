@@ -33,32 +33,32 @@ module Errplane
     attr_accessor :queue_maximum_post
 
     DEFAULTS = {
-        :api_host => "api.errplane.com",
-        :app_host => "app.errplane.com",
-        :ignored_exceptions => %w{ActiveRecord::RecordNotFound
-                                ActionController::RoutingError},
-        :ignored_exception_messages => [],
-        :ignored_reports => [],
-        :ignored_environments => %w{test cucumber selenium},
-        :ignored_user_agents => %w{GoogleBot},
-        :environment_variable_filters => [
-            /password/i,
-            /key/i,
-            /secret/i
-        ],
-        :backtrace_filters => [
-            lambda { |line| line.gsub(/^\.\//, "") },
-            lambda { |line|
-              return line if Errplane.configuration.application_root.to_s.empty?
-              line.gsub(/#{Errplane.configuration.application_root}/, "[APP_ROOT]")
-            },
-            lambda { |line|
-              if defined?(Gem) && !Gem.path.nil? && !Gem.path.empty?
-                Gem.path.each { |path| line = line.gsub(/#{path}/, "[GEM_ROOT]") }
-              end
-              line
-            }
-        ]
+      :api_host => "api.errplane.com",
+      :app_host => "app.errplane.com",
+      :ignored_exceptions => %w{ActiveRecord::RecordNotFound
+                              ActionController::RoutingError},
+      :ignored_exception_messages => [],
+      :ignored_reports => [],
+      :ignored_environments => %w{test cucumber selenium},
+      :ignored_user_agents => %w{GoogleBot},
+      :environment_variable_filters => [
+        /password/i,
+        /key/i,
+        /secret/i
+      ],
+      :backtrace_filters => [
+        lambda { |line| line.gsub(/^\.\//, "") },
+        lambda { |line|
+          return line if Errplane.configuration.application_root.to_s.empty?
+          line.gsub(/#{Errplane.configuration.application_root}/, "[APP_ROOT]")
+        },
+        lambda { |line|
+          if defined?(Gem) && !Gem.path.nil? && !Gem.path.empty?
+            Gem.path.each { |path| line = line.gsub(/#{path}/, "[GEM_ROOT]") }
+          end
+          line
+        }
+      ]
     }
 
     def initialize
