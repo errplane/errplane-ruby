@@ -40,22 +40,30 @@ module Errplane
         end
       end
 
+      def current_threads()
+        Thread.list.select {|t| t[:errplane]}
+      end
+
+      def current_thread_count()
+        Thread.list.count {|t| t[:errplane]}
+      end
+
       def spawn_threads()
         Errplane.configuration.queue_worker_threads.times do |thread_num|
           log :debug, "Spawning background worker thread #{thread_num}."
 
           Thread.new do
+            Thread.current[:errplane] = true
             while true
               sleep Errplane.configuration.queue_worker_polling_interval
               check_background_queue(thread_num)
             end
           end
-
         end
       end
 
       def check_background_queue(thread_num = 0)
-        log :debug, "Checking background queue on thread #{thread_num} (#{Thread.list.count - 1} active)"
+        log :debug, "Checking background queue on thread #{thread_num} (#{current_threads.count} active)"
 
         data = []
 

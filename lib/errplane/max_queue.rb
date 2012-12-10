@@ -7,6 +7,7 @@ module Errplane
     def initialize(max = 10_000)
       raise ArgumentError, "queue size must be positive" unless max > 0
       @max = max
+      Errplane::Worker.spawn_threads if Errplane::Worker.current_thread_count.zero?
       super()
     end
 

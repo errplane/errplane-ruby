@@ -24,7 +24,6 @@ module Errplane
 
     attr_writer :configuration
     attr_accessor :transmitter
-    attr_accessor :queue
 
     def configure(silent = false)
       yield(configuration)
