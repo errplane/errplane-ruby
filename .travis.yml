@@ -15,4 +15,4 @@ notifications:
     - mechanics@errplane.com
   on_success: change
   on_failure: always
-script: rake spec
+script: bundle exec rake spec

@@ -22,6 +22,9 @@ function build_versions() {
 }
 
 function build_with_ruby() {
+  echo
+  echo "### Using Ruby v$1 ###"
+
   rvm use ruby-$1@errplane_gem --create
   build_versions
 }
@@ -29,7 +32,9 @@ function build_with_ruby() {
 function build() {
   build_with_ruby "1.9.3-p194"
   build_with_ruby "1.9.2-p290"
+  build_with_ruby "ree"
   build_with_ruby "1.8.7-p357"
+  build_with_ruby "1.8.7-p370"
 }
 
 function clean() {
