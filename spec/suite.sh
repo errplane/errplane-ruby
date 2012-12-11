@@ -11,7 +11,7 @@ fi
 function build_version() {
   echo "Bundling for Rails $1..."
   BUNDLE_GEMFILE=gemfiles/Gemfile.rails-$1 bundle install --quiet
-  BUNDLE_GEMFILE=gemfiles/Gemfile.rails-$1 bundle exec rake -t spec
+  BUNDLE_GEMFILE=gemfiles/Gemfile.rails-$1 bundle exec rake spec
 }
 
 function build_versions() {
@@ -31,10 +31,8 @@ function build_with_ruby() {
 
 function build() {
   build_with_ruby "1.9.3-p194"
-  build_with_ruby "1.9.2-p290"
   build_with_ruby "ree"
   build_with_ruby "1.8.7-p357"
-  build_with_ruby "1.8.7-p370"
 }
 
 function clean() {

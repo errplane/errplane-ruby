@@ -18,7 +18,7 @@ describe "exception handling" do
 
   describe "in an action that raises an exception" do
     it "should add an exception to the queue" do
-      Errplane.queue.size.should be_zero
+      Errplane.queue.size.should == 0
       get "/widgets/new"
       Errplane.queue.size.should == 1
     end
@@ -27,7 +27,7 @@ describe "exception handling" do
   describe "in an action that does not raise an exception" do
     it "should not add anything to the queue" do
       get "/widgets"
-      Errplane.queue.size.should be_zero
+      Errplane.queue.size.should == 0
     end
   end
 
@@ -37,7 +37,7 @@ describe "exception handling" do
         config.ignored_user_agents = %w{Googlebot}
       end
       get "/widgets/new", {}, { "HTTP_USER_AGENT" => "Googlebot/2.1" }
-      Errplane.queue.size.should be_zero
+      Errplane.queue.size.should == 0
     end
   end
 end

@@ -15,8 +15,10 @@ else
     class Configuration
       def after_initialize; end
     end
+
     @@configuration = Configuration.new
   end
+
   require 'initializer'
 end
 
@@ -30,6 +32,8 @@ if defined? Rails
   puts "Loading Rails v#{Rails.version}..."
 
   if Rails.version.to_f < 3.0
+    Gem::Deprecate.skip = true
+
     RAILS_ROOT = "#{File.dirname(__FILE__)}/support/rails2"
     require "#{RAILS_ROOT}/config/environment"
     require "spec/rails"
@@ -37,8 +41,4 @@ if defined? Rails
     require "support/rails3/app"
     require "rspec/rails"
   end
-end
-
-if defined? Sinatra
-  require 'spec_helper_for_sinatra'
 end
