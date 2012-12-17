@@ -2,6 +2,7 @@ module Errplane
   class Configuration
     attr_accessor :api_key
     attr_accessor :api_host
+    attr_accessor :api_host_port
     attr_accessor :app_host
     attr_accessor :application_id
     attr_accessor :application_name
@@ -63,6 +64,7 @@ module Errplane
 
     def initialize
       @api_host = DEFAULTS[:api_host]
+      @api_host_port = DEFAULTS[:api_host_port]
       @app_host = DEFAULTS[:app_host]
       @ignored_exceptions = DEFAULTS[:ignored_exceptions].dup
       @ignored_exception_messages = DEFAULTS[:ignored_exception_messages].dup

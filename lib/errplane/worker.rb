@@ -25,7 +25,7 @@ module Errplane
 
           retry_count = POST_RETRIES
           begin
-            http = Net::HTTP.new("api.errplane.com", "80")
+            http = Net::HTTP.new(Errplane.configuration.api_host, Errplane.configuration.api_host_port)
             response = http.post(url, data)
             log :debug, "Response code: #{response.code}"
           rescue => e
