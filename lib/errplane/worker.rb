@@ -54,6 +54,12 @@ module Errplane
 
           Thread.new do
             Thread.current[:errplane] = true
+
+            at_exit do
+              log :debug, "Thread exiting, flushing queue."
+              check_background_queue(thread_num) until Errplane.queue.empty?
+            end
+
             while true
               sleep Errplane.configuration.queue_worker_polling_interval
               check_background_queue(thread_num)
