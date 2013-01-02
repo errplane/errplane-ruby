@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.email       = ["todd@errplane.com"]
   s.homepage    = "http://errplane.com"
   s.summary     = %q{Rails-based instrumentation library for Errplane.}
-  s.description = %q{This gem provides implements instrumentation with Errplane for Rails 3.x applications.}
+  s.description = %q{This gem provides implements instrumentation with Errplane for Rails 2.3.x and 3.x applications.}
 
   s.rubyforge_project = "errplane"
 
