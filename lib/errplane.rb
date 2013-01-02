@@ -59,11 +59,16 @@ module Errplane
       end
     end
 
-    def time(name = nil)
-      start_time = Time.now
-      yield
-      elapsed_time = Time.now - start_time
-      report("timed_blocks/#{(name || Socket.gethostname)}", :value => (elapsed_time*1000).ceil)
+    def time(name = nil, params = {})
+      value = if block_given?
+        start_time = Time.now
+        yield
+        ((Time.now - start_time)*1000).ceil
+      else
+        params[:value] || 0
+      end
+
+      report("timed_blocks/#{(name || Socket.gethostname)}", :value => value)
     end
 
     def transmit_unless_ignorable(e, env)
