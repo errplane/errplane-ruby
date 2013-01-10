@@ -1,6 +1,6 @@
 Errplane
 ========
-[![Build Status](https://secure.travis-ci.org/errplane/gem.png)](http://travis-ci.org/errplane/[gem])
+[![Build Status](https://secure.travis-ci.org/errplane/errplane-ruby.png)](http://travis-ci.org/errplane/errplane-ruby)
 
 This gem integrates your applications with [Errplane](http://errplane.com), a cloud-based tool for handling exceptions, log aggregation, uptime monitoring, and alerting.
 
