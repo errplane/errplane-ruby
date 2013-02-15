@@ -25,14 +25,21 @@ module Errplane
 
           retry_count = POST_RETRIES
           begin
-            http = Net::HTTP.new(Errplane.configuration.api_host, Errplane.configuration.api_host_port)
+            # http = Net::HTTP.new(Errplane.configuration.api_host, Errplane.configuration.api_host_port)
+            http = Net::HTTP.new(Errplane.configuration.api_host, 443)
+            http.use_ssl = true
+            http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+            http.open_timeout = 3
+            http.read_timeout = 3
+
             response = http.post(url, data)
             log :debug, "Response code: #{response.code}"
+            log :debug, "Response: #{response.inspect}"
           rescue => e
             retry_count -= 1
             unless retry_count.zero?
               log :info, "POST failed, retrying."
-              sleep 10
+              sleep 1
               retry
             end
             log :info, "Unable to POST after retrying, aborting!"
