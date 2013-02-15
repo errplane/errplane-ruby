@@ -70,6 +70,7 @@ module Errplane
       connection = Net::HTTP.new(Errplane.configuration.api_host, 443)
       connection.use_ssl = true
       connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      connection
     end
   end
 end
