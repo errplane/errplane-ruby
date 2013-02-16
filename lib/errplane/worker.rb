@@ -104,9 +104,13 @@ module Errplane
             when "exception"
               Errplane.transmitter.deliver n[:data], n[:url]
             when "custom"
-              line = "#{n[:name]} #{n[:value] || 1} #{n[:timestamp]}"
-              line = "#{line} #{Base64.encode64(n[:message]).strip}" if n[:message]
-              data << line
+              if n[:name].length > 255
+                log :error, "Time series name too long! Discarding data for: #{n[:name]}"
+              else
+                line = "#{n[:name]} #{n[:value] || 1} #{n[:timestamp]}"
+                line = "#{line} #{Base64.encode64(n[:message]).strip}" if n[:message]
+                data << line
+              end
             end
           rescue => e
             log :info, "Instrumentation Error! #{e.inspect}"
