@@ -12,6 +12,26 @@ module Errplane
           end
 
           Errplane.configure do |config|
+            config.debug = true
+            config.ignored_environments = []
+          end
+
+          timestamp = Time.now.utc.to_i
+          data = "tests/#{timestamp} 1 #{timestamp}"
+          if Errplane::Worker.post_data(data)
+            puts "Test data sent successfully!"
+          else
+            puts "Test failed! Check your network connection and try again."
+          end
+        end
+
+        task :diagnose => :environment do
+          if Errplane.configuration.api_key.nil?
+            puts "Hey, you need to define an API key first. Run `rails g errplane <api-key>` if you didn't already."
+            exit
+          end
+
+          Errplane.configure do |config|
             config.ignored_environments = []
           end
 

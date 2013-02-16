@@ -67,7 +67,7 @@ module Errplane
 
     private
     def initialize_http_connection
-      connection = Net::HTTP.new(Errplane.configuration.api_host, 443)
+      connection = Net::HTTP.new("api.errplane.com", 443)
       connection.use_ssl = true
       connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
       connection

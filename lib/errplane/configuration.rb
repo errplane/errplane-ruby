@@ -34,7 +34,7 @@ module Errplane
     attr_accessor :queue_maximum_post
 
     DEFAULTS = {
-      :api_host => "api.errplane.com",
+      :api_host => "apiv2.errplane.com",
       :app_host => "app.errplane.com",
       :ignored_exceptions => %w{ActiveRecord::RecordNotFound
                               ActionController::RoutingError},

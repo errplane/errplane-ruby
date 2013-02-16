@@ -18,9 +18,10 @@ module Errplane
       def post_data(data)
         if Errplane.configuration.ignore_current_environment?
           log :debug, "Current environment is ignored, skipping POST."
+          return false
         else
           log :debug, "Posting data:\n#{indent_lines(data, 13)}"
-          url = "/api/v2/time_series/applications/#{Errplane.configuration.application_id}/environments/#{Errplane.configuration.rails_environment}?api_key=#{Errplane.configuration.api_key}"
+          url = "/databases/#{Errplane.configuration.application_id}#{Errplane.configuration.rails_environment}/points?api_key=#{Errplane.configuration.api_key}"
           log :debug, "Posting to: #{url}"
 
           retry_count = POST_RETRIES
@@ -43,7 +44,9 @@ module Errplane
               retry
             end
             log :info, "Unable to POST after retrying, aborting!"
+            return false
           end
+          return true
         end
       end
 
