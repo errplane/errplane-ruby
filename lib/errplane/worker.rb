@@ -97,7 +97,7 @@ module Errplane
                 view_runtime = (n[:payload][:view_runtime] || 0).ceil
                 db_runtime = (n[:payload][:db_runtime] || 0).ceil
 
-                data << "controllers/#{n[:payload][:controller]}/#{n[:payload][:action]} #{controller_runtime} #{timestamp}"
+                data << "controllers/#{n[:payload][:controller]}##{n[:payload][:action]} #{controller_runtime} #{timestamp}"
                 data << "views #{view_runtime} #{timestamp}"
                 data << "db #{db_runtime} #{timestamp}"
               end
