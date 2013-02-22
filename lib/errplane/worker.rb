@@ -6,13 +6,13 @@ require "base64"
 module Errplane
   class Worker
     MAX_POST_LINES = 200
-    POST_RETRIES = 5
+    MAX_TIME_SERIES_NAME_LENGTH = 255
 
     class << self
       include Errplane::Logger
 
       def indent_lines(lines, num)
-        lines.split("\n").map {|line| (" " * num) + line}.join("\n")
+        lines.split("\n").reject {|line| line !~ /\s/}.map {|line| (" " * num) + line}.join("\n")
       end
 
       def post_data(data)
@@ -20,33 +20,12 @@ module Errplane
           log :debug, "Current environment is ignored, skipping POST."
           return false
         else
-          log :debug, "Posting data:\n#{indent_lines(data, 13)}"
-          url = "/databases/#{Errplane.configuration.application_id}#{Errplane.configuration.rails_environment}/points?api_key=#{Errplane.configuration.api_key}"
-          log :debug, "Posting to: #{url}"
-
-          retry_count = POST_RETRIES
+          log :debug, "POSTing data:\n#{indent_lines(data, 13)}"
           begin
-            # http = Net::HTTP.new(Errplane.configuration.api_host, Errplane.configuration.api_host_port)
-            http = Net::HTTP.new(Errplane.configuration.api_host, 443)
-            http.use_ssl = true
-            http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-            http.open_timeout = 3
-            http.read_timeout = 3
-
-            response = http.post(url, data)
-            log :debug, "Response code: #{response.code}"
-            log :debug, "Response: #{response.inspect}"
+            Errplane.api.post(data)
           rescue => e
-            retry_count -= 1
-            unless retry_count.zero?
-              log :info, "POST failed, retrying."
-              sleep 1
-              retry
-            end
-            log :info, "Unable to POST after retrying, aborting!"
-            return false
+            log :error, "Error calling API: #{e.inspect}"
           end
-          return true
         end
       end
 
@@ -88,29 +67,10 @@ module Errplane
           log :debug, "Found data in the queue! (#{n[:name]})"
 
           begin
-            case n[:source]
-            when "active_support"
-              case n[:name].to_s
-              when "process_action.action_controller"
-                timestamp = n[:finish].utc.to_i
-                controller_runtime = ((n[:finish] - n[:start])*1000).ceil
-                view_runtime = (n[:payload][:view_runtime] || 0).ceil
-                db_runtime = (n[:payload][:db_runtime] || 0).ceil
-
-                data << "controllers/#{n[:payload][:controller]}##{n[:payload][:action]} #{controller_runtime} #{timestamp}"
-                data << "views #{view_runtime} #{timestamp}"
-                data << "db #{db_runtime} #{timestamp}"
-              end
-            when "exception"
-              Errplane.transmitter.deliver n[:data], n[:url]
-            when "custom"
-              if n[:name].length > 255
-                log :error, "Time series name too long! Discarding data for: #{n[:name]}"
-              else
-                line = "#{n[:name]} #{n[:value] || 1} #{n[:timestamp]}"
-                line = "#{line} #{Base64.encode64(n[:message]).strip}" if n[:message]
-                data << line
-              end
+            if n[:name].split("|").any?{|x| x.length > MAX_TIME_SERIES_NAME_LENGTH}
+              log :error, "Time series name too long! Discarding data for: #{n[:name]}"
+            else
+              data << Errplane.process_line(n)
             end
           rescue => e
             log :info, "Instrumentation Error! #{e.inspect}"

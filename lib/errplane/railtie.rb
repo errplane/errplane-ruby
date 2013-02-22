@@ -63,16 +63,16 @@ module Errplane
 
           10.times do
             sleep 1
-            break unless Errplane.transmitter.last_response.nil?
+            break unless Errplane.api.last_response.nil?
           end
 
           if response.try(:first) == 500
-            if Errplane.transmitter.last_response.nil?
+            if Errplane.api.last_response.nil?
               puts "Uh oh. Your app threw an exception, but we didn't get a response. Check your network connection and try again."
-            elsif Errplane.transmitter.last_response.code == "201"
+            elsif Errplane.api.last_response.code == "201"
               puts "Done. Check your email or http://errplane.com for the exception notice."
             else
-              puts "That didn't work. The Errplane API said: #{Errplane.transmitter.last_response.body}"
+              puts "That didn't work. The Errplane API said: #{Errplane.api.last_response.body}"
             end
           else
             puts "Request failed: #{response}"
@@ -82,12 +82,12 @@ module Errplane
             response = ::Rails.application.call(env)
 
             if response.try(:first) == 500
-              if Errplane.transmitter.last_response.nil?
+              if Errplane.api.last_response.nil?
                 puts "Uh oh. Your app threw an exception, but we didn't get a response. Check your network connection and try again."
-              elsif Errplane.transmitter.last_response.code == "201"
+              elsif Errplane.api.last_response.code == "201"
                 puts "Done. Check your email or http://errplane.com for the exception notice."
               else
-                puts "That didn't work. The Errplane API said: #{Errplane.transmitter.last_response.body}"
+                puts "That didn't work. The Errplane API said: #{Errplane.api.last_response.body}"
               end
             else
               puts "Request failed: #{response}"
@@ -105,7 +105,7 @@ module Errplane
     config.after_initialize do
       Errplane.configure(true) do |config|
         config.logger                ||= ::Rails.logger
-        config.rails_environment     ||= ::Rails.env
+        config.environment           ||= ::Rails.env
         config.application_root      ||= ::Rails.root
         config.application_name      ||= ::Rails.application.class.parent_name
         config.framework               = "Rails"
@@ -130,13 +130,30 @@ module Errplane
       if defined?(ActiveSupport::Notifications)
         ActiveSupport::Notifications.subscribe "process_action.action_controller" do |name, start, finish, id, payload|
           if Errplane.configuration.instrumentation_enabled?
-            h = { :name => name,
-                  :start => start,
-                  :finish => finish,
-                  :nid => id,
-                  :payload => payload,
-                  :source => "active_support"}
-            Errplane.queue.push(h)
+            timestamp = finish.utc.to_i
+            controller_runtime = ((finish - start)*1000).ceil
+            view_runtime = (payload[:view_runtime] || 0).ceil
+            db_runtime = (payload[:db_runtime] || 0).ceil
+            controller_name = payload[:controller]
+            action_name = payload[:action]
+
+            Errplane.queue.push({
+              :name => "controllers/#{controller_name}##{action_name}",
+              :value => controller_runtime,
+              :timestamp => timestamp
+            })
+
+            Errplane.queue.push({
+              :name => "views/#{controller_name}##{action_name}",
+              :value => view_runtime,
+              :timestamp => timestamp
+            })
+
+            Errplane.queue.push({
+              :name => "db/#{controller_name}##{action_name}",
+              :value => db_runtime,
+              :timestamp => timestamp
+            })
           end
         end
       end

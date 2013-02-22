@@ -9,7 +9,7 @@ module Errplane
     attr_accessor :application_root
 
     attr_accessor :logger
-    attr_accessor :rails_environment
+    attr_accessor :environment
     attr_accessor :framework
     attr_accessor :framework_version
     attr_accessor :language
@@ -101,7 +101,7 @@ module Errplane
     end
 
     def ignore_current_environment?
-      self.ignored_environments.include?(self.rails_environment)
+      self.ignored_environments.include?(self.environment)
     end
 
     def define_custom_exception_data(&block)

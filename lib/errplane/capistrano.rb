@@ -16,9 +16,9 @@ Capistrano::Configuration.instance(:must_exist).load do
       load File.join(Dir.pwd, "config/initializers/errplane.rb")
 
       Errplane.configuration.logger = Logger.new("/dev/null")
-      Errplane.configuration.rails_environment = framework_env
+      Errplane.configuration.environment = framework_env
 
-      deploy_options = {
+      context = {
         :environment => framework_env,
         :revision => current_revision,
         :repository => repository,
@@ -30,8 +30,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         :scm_user_email => deploying_user_email
       }
 
-      Errplane::Transmitter.new.relay(deploy_options, true)
-      puts 'Done.'
+      Errplane.report_deployment(context)
     end
   end
 end

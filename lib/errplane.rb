@@ -3,15 +3,16 @@ require "net/https"
 require "rubygems"
 require "socket"
 require "thread"
+require "base64"
 
 require "json" unless Hash.respond_to?(:to_json)
 
 require "errplane/version"
 require "errplane/logger"
-require "errplane/black_box"
+require "errplane/exception_presenter"
 require "errplane/max_queue"
 require "errplane/configuration"
-require "errplane/transmitter"
+require "errplane/api"
 require "errplane/backtrace"
 require "errplane/worker"
 require "errplane/rack"
@@ -23,11 +24,11 @@ module Errplane
     include Logger
 
     attr_writer :configuration
-    attr_accessor :transmitter
+    attr_accessor :api
 
     def configure(silent = false)
       yield(configuration)
-      self.transmitter = Transmitter.new(configuration)
+      self.api = Api.new
     end
 
     def configuration
@@ -38,14 +39,23 @@ module Errplane
       @queue ||= MaxQueue.new(configuration.queue_maximum_depth)
     end
 
-    def report(name, params = {})
+    def report(name, params = {}, async = true)
       unless configuration.ignored_reports.find{ |msg| /#{msg}/ =~ name  }
-        Errplane.queue.push({
+        data = {
           :name => name.gsub(/\s+/, "_"),
-          :source => "custom",
-          :timestamp => current_timestamp
-        }.merge(params))
+          :timestamp => "now"
+        }.merge(params)
+
+        if async
+          Errplane.queue.push(data)
+        else
+          Errplane.api.post(Errplane.process_line(data))
+        end
       end
+    end
+
+    def report_deployment(context = nil, async = false)
+      report("deployments", {:context => context}, async)
     end
 
     def heartbeat(name, interval)
@@ -54,12 +64,12 @@ module Errplane
         while true do
           log :debug, "Sleeping '#{name}' for #{interval} seconds."
           sleep(interval)
-          report(name)
+          report(name, :timestamp => "now")
         end
       end
     end
 
-    def time(name = nil, params = {})
+    def time(name, params = {})
       value = if block_given?
         start_time = Time.now
         yield
@@ -68,35 +78,22 @@ module Errplane
         params[:value] || 0
       end
 
-      report("timed_blocks/#{(name || Socket.gethostname)}", :value => value)
+      report(name, :value => value)
     end
 
     def transmit_unless_ignorable(e, env)
-      begin
-        black_box = assemble_black_box_for(e, env)
-        log :info, "Transmitter: #{transmitter.inspect}"
-        log :info, "Black Box: #{black_box.to_json}"
-        log :info, "Ignorable Exception? #{ignorable_exception?(e)}"
-        log :info, "Environment: #{ENV.to_hash}"
-
-        transmitter.enqueue(black_box) unless ignorable_exception?(e)
-      rescue => e
-        log :info, "[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}"
-      end
+      transmit(e, env) unless ignorable_exception?(e)
     end
 
     def transmit(e, env = {})
       begin
-        black_box = if e.is_a?(String)
-                      assemble_black_box_for(Exception.new(e), env)
-                    else
-                      assemble_black_box_for(e, env)
-                    end
+        exception_presenter = ExceptionPresenter.new(e, env)
+        log :info, "Exception: #{exception_presenter.to_json[0..512]}..."
 
-        log :info, "Transmitter: #{transmitter.inspect}"
-        log :info, "Black Box: #{black_box.to_json}"
-        log :info, "Environment: #{ENV.to_hash}"
-        transmitter.enqueue(black_box)
+        Errplane.queue.push({
+          :name => exception_presenter.time_series_name,
+          :context => exception_presenter.to_json
+        })
       rescue => e
         log :info, "[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}"
       end
@@ -106,8 +103,16 @@ module Errplane
       Time.now.utc.to_i
     end
 
+    def process_line(line)
+      data = "#{line[:name]} #{line[:value] || 1} #{line[:timestamp] || "now"}"
+      data = "#{data} #{Base64.encode64(line[:context]).strip}" if line[:context]
+      data
+    end
+
     def ignorable_exception?(e)
-      configuration.ignore_current_environment? || !!configuration.ignored_exception_messages.find{ |msg| /.*#{msg}.*/ =~ e.message  } || configuration.ignored_exceptions.include?(e.class.to_s)
+      configuration.ignore_current_environment? ||
+      !!configuration.ignored_exception_messages.find{ |msg| /.*#{msg}.*/ =~ e.message  } ||
+      configuration.ignored_exceptions.include?(e.class.to_s)
     end
 
     def rescue(&block)
@@ -116,27 +121,15 @@ module Errplane
       if configuration.ignore_current_environment?
         raise(e)
       else
-        transmit_unless_ignorable(e, {})
+        transmit_unless_ignorable(e, {}) unless ignorable_exception?(e)
       end
     end
 
     def rescue_and_reraise(&block)
       block.call
     rescue StandardError => e
-      transmit_unless_ignorable(e, {})
+      transmit_unless_ignorable(e, {}) unless ignorable_exception?(e)
       raise(e)
-    end
-
-    private
-
-    def assemble_black_box_for(e, opts = {})
-      opts ||= {}
-      log :info, "OPTS: #{opts}"
-      e = e.continued_exception if e.respond_to?(:continued_exception)
-      e = e.original_exception if e.respond_to?(:original_exception)
-      opts = opts.merge(:exception => e)
-      opts[:environment_variables] = ENV.to_hash
-      black_box = BlackBox.new(opts)
     end
   end
 end

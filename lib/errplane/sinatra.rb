@@ -4,7 +4,7 @@ Errplane.configure(true) do |config|
   config.framework_version      = ::Sinatra::VERSION
 
   if defined?(settings)
-    config.rails_environment  ||= settings.environment
+    config.environment        ||= settings.environment
     config.application_root   ||= settings.root
   end
 end

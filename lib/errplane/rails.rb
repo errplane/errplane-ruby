@@ -18,7 +18,7 @@ module Errplane
       Errplane.configure(true) do |config|
         config.logger                ||= ::Rails.logger
         config.debug                   = true
-        config.rails_environment     ||= ::Rails.env
+        config.environment           ||= ::Rails.env
         config.application_root      ||= ::Rails.root
         config.application_name      ||= "Application"
         config.framework               = "Rails"
