@@ -74,7 +74,7 @@ module Errplane
     end
 
     def context
-      Base64.encode64(to_json)
+      Base64.strict_encode64(to_json)
     end
 
     def reporter

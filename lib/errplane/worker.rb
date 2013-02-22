@@ -12,7 +12,7 @@ module Errplane
       include Errplane::Logger
 
       def indent_lines(lines, num)
-        lines.split("\n").reject {|line| line !~ /\s/}.map {|line| (" " * num) + line}.join("\n")
+        lines.split("\n").map {|line| (" " * num) + line[0..64]}.join("\n")
       end
 
       def post_data(data)

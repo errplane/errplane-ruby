@@ -104,9 +104,8 @@ module Errplane
     end
 
     def process_line(line)
-
       data = "#{line[:name]} #{line[:value] || 1} #{line[:timestamp] || "now"}"
-      data = "#{data} #{Base64.encode64(line[:context].to_json).strip}" if line[:context]
+      data = "#{data} #{Base64.strict_encode64(line[:context].to_json)}" if line[:context]
       data
     end
 
