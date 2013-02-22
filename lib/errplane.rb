@@ -92,7 +92,7 @@ module Errplane
 
         Errplane.queue.push({
           :name => exception_presenter.time_series_name,
-          :context => exception_presenter.to_json
+          :context => exception_presenter
         })
       rescue => e
         log :info, "[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}"
@@ -104,8 +104,9 @@ module Errplane
     end
 
     def process_line(line)
+
       data = "#{line[:name]} #{line[:value] || 1} #{line[:timestamp] || "now"}"
-      data = "#{data} #{Base64.encode64(line[:context]).strip}" if line[:context]
+      data = "#{data} #{Base64.encode64(line[:context].to_json).strip}" if line[:context]
       data
     end
 
