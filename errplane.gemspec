@@ -22,8 +22,6 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'json'
 
-  s.add_dependency 'activesupport', ['>= 2.3.2']
-  s.add_dependency 'actionpack', ['>= 2.3.2']
   s.add_development_dependency 'bundler', ['>= 1.0.0']
   s.add_development_dependency 'fakeweb', ['>= 0']
   s.add_development_dependency 'guard', ['>= 0']
