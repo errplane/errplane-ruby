@@ -5,11 +5,15 @@ class ErrplaneGenerator < Rails::Generators::Base
 
   begin
     puts "Contacting Errplane API"
-    application_name = Rails.application.class.parent_name
+    application_name = Rails.application.class.parent_name || "NewApplication"
     api_key = ARGV.last
-    http = Net::HTTP.new("app.errplane.com", "80")
+
+    connection = Net::HTTP.new("errplane.com", 443)
+    connection.use_ssl = true
+    connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
     url = "/api/v1/applications?api_key=#{api_key}&name=#{application_name}"
-    response = http.post(url, nil)
+    response = connection.post(url, nil)
+
     @application = JSON.parse(response.body)
 
     unless response.is_a?(Net::HTTPSuccess)
