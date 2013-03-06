@@ -81,12 +81,13 @@ module Errplane
       report(name, :value => value)
     end
 
-    def transmit_unless_ignorable(e, env)
+    def transmit_unless_ignorable(e, env = {})
       transmit(e, env) unless ignorable_exception?(e)
     end
 
     def transmit(e, env = {})
       begin
+        env = errplane_request_data if env.empty? && defined? errplane_request_data
         exception_presenter = ExceptionPresenter.new(e, env)
         log :info, "Exception: #{exception_presenter.to_json[0..512]}..."
 
@@ -121,14 +122,14 @@ module Errplane
       if configuration.ignore_current_environment?
         raise(e)
       else
-        transmit_unless_ignorable(e, {}) unless ignorable_exception?(e)
+        transmit_unless_ignorable(e)
       end
     end
 
     def rescue_and_reraise(&block)
       block.call
     rescue StandardError => e
-      transmit_unless_ignorable(e, {}) unless ignorable_exception?(e)
+      transmit_unless_ignorable(e)
       raise(e)
     end
   end

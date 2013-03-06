@@ -33,7 +33,7 @@ module Errplane
 
     def to_json
       payload = {
-        :time => Time.now.to_i,
+        :time => Time.now.utc.to_i,
         :application_name => Errplane.configuration.application_name,
         :application_root => Errplane.configuration.application_root,
         :framework => Errplane.configuration.framework,
