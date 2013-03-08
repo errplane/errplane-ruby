@@ -12,7 +12,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       set(:deploying_user_email) { `bash -c 'git config --get user.email'`.strip }
 
       puts "Notifying Errplane of the deployment.."
-      framework_env = fetch(:rails_env, fetch(:errplane_env, 'production'))
+      framework_env = fetch(:errplane_env, fetch(:rails_env, 'production'))
       load File.join(Dir.pwd, "config/initializers/errplane.rb")
 
       Errplane.configuration.logger = Logger.new("/dev/null")
