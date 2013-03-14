@@ -60,24 +60,26 @@ module Errplane
       def check_background_queue(thread_num = 0)
         log :debug, "Checking background queue on thread #{thread_num} (#{current_threads.count} active)"
 
-        data = []
+        begin
+          data = []
 
-        while data.size < MAX_POST_LINES && !Errplane.queue.empty?
-          n = Errplane.queue.pop(true) rescue next;
-          log :debug, "Found data in the queue! (#{n[:name]})"
+          while data.size < MAX_POST_LINES && !Errplane.queue.empty?
+            n = Errplane.queue.pop(true) rescue next;
+            log :debug, "Found data in the queue! (#{n[:name]})"
 
-          begin
-            if n[:name].split("|").any?{|x| x.length > MAX_TIME_SERIES_NAME_LENGTH}
-              log :error, "Time series name too long! Discarding data for: #{n[:name]}"
-            else
-              data << Errplane.process_line(n)
+            begin
+              if n[:name].split("|").any?{|x| x.length > MAX_TIME_SERIES_NAME_LENGTH}
+                log :error, "Time series name too long! Discarding data for: #{n[:name]}"
+              else
+                data << Errplane.process_line(n)
+              end
+            rescue => e
+              log :info, "Instrumentation Error! #{e.inspect}"
             end
-          rescue => e
-            log :info, "Instrumentation Error! #{e.inspect}"
           end
-        end
 
-        post_data(data.join("\n")) unless data.empty?
+          post_data(data.join("\n")) unless data.empty?
+        end while Errplane.queue.length > MAX_POST_LINES
       end
     end
   end
