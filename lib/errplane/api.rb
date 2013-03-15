@@ -48,7 +48,7 @@ module Errplane
     def url
       "/databases/" \
       + Errplane.configuration.application_id \
-      + Errplane.configuration.environment \
+      + Errplane.configuration.environment.to_s \
       + "/points?api_key=" \
       + Errplane.configuration.api_key
     end
