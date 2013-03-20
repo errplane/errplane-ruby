@@ -18,6 +18,7 @@ require "errplane/worker"
 require "errplane/rack"
 
 require "errplane/railtie" if defined?(Rails::Railtie)
+require "errplane/sidekiq" if defined?(Sidekiq)
 
 module Errplane
   class << self
