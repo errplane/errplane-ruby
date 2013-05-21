@@ -137,3 +137,11 @@ module Errplane
 end
 
 require "errplane/sinatra" if defined?(Sinatra::Request)
+
+unless defined?(Base64.strict_encode64)
+  module Base64
+    def strict_encode64(str)
+      return encode64(str).gsub("\n", "")
+    end
+  end
+end
