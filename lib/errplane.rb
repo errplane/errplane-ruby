@@ -71,15 +71,17 @@ module Errplane
     end
 
     def time(name, params = {})
-      value = if block_given?
+      time_elapsed = if block_given?
         start_time = Time.now
-        yield
+        yield_value = yield
         ((Time.now - start_time)*1000).ceil
       else
         params[:value] || 0
       end
 
-      report(name, :value => value)
+      report(name, :value => time_elapsed)
+
+      yield_value
     end
 
     def transmit_unless_ignorable(e, env = {})
