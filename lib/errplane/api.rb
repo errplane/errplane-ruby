@@ -47,10 +47,10 @@ module Errplane
     private
     def url
       "/databases/" \
-      + Errplane.configuration.application_id \
-      + Errplane.configuration.environment \
+      + Errplane.configuration.application_id.to_s \
+      + Errplane.configuration.environment.to_s \
       + "/points?api_key=" \
-      + Errplane.configuration.api_key
+      + Errplane.configuration.api_key.to_s
     end
 
     def initialize_secure_connection
