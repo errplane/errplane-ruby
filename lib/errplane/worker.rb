@@ -5,22 +5,18 @@ require "base64"
 
 module Errplane
   class Worker
-    MAX_POST_LINES = 200
+    MAX_POST_POINTS = 200
     MAX_TIME_SERIES_NAME_LENGTH = 255
 
     class << self
       include Errplane::Logger
-
-      def indent_lines(lines, num)
-        lines.split("\n").map {|line| (" " * num) + line[0..64]}.join("\n")
-      end
 
       def post_data(data)
         if Errplane.configuration.ignore_current_environment?
           log :debug, "Current environment is ignored, skipping POST."
           return false
         else
-          log :debug, "POSTing data:\n#{indent_lines(data, 13)}"
+          log :debug, "POSTing data:\n#{data}"
           begin
             Errplane.api.post(data)
           rescue => e
@@ -63,23 +59,23 @@ module Errplane
         begin
           data = []
 
-          while data.size < MAX_POST_LINES && !Errplane.queue.empty?
-            n = Errplane.queue.pop(true) rescue next;
-            log :debug, "Found data in the queue! (#{n[:name]})"
+          while data.size < MAX_POST_POINTS && !Errplane.queue.empty?
+            p = Errplane.queue.pop(true) rescue next;
+            log :debug, "Found data in the queue! (#{p[:n]})"
 
             begin
-              if n[:name].split("|").any?{|x| x.length > MAX_TIME_SERIES_NAME_LENGTH}
-                log :error, "Time series name too long! Discarding data for: #{n[:name]}"
+              if p[:n].size > MAX_TIME_SERIES_NAME_LENGTH
+                log :error, "Time series name too long! Discarding data for: #{p[:n]}"
               else
-                data << Errplane.process_line(n)
+                data.push p
               end
             rescue => e
-              log :info, "Instrumentation Error! #{e.inspect}"
+              log :info, "Instrumentation Error! #{e.inspect} #{e.backtrace.first}"
             end
           end
 
-          post_data(data.join("\n")) unless data.empty?
-        end while Errplane.queue.length > MAX_POST_LINES
+          post_data(data) unless data.empty?
+        end while Errplane.queue.length > MAX_POST_POINTS
       end
     end
   end

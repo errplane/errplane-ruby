@@ -112,6 +112,10 @@ module Errplane
       @custom_exception_data_handler.call(black_box) if @custom_exception_data_handler
     end
 
+    def database_name
+      @application_id.to_s + @environment.to_s
+    end
+
     private
     def initialize_http_connection
       Net::HTTP.new(@app_host, "80")

@@ -40,19 +40,37 @@ module Errplane
       @queue ||= MaxQueue.new(configuration.queue_maximum_depth)
     end
 
-    def report(name, params = {}, async = true)
+    def report(name, params = {}, udp = false)
       unless configuration.ignored_reports.find{ |msg| /#{msg}/ =~ name  }
-        data = {
-          :name => name.gsub(/\s+/, "_"),
-          :timestamp => "now"
-        }.merge(params)
-
-        if async
-          Errplane.queue.push(data)
-        else
-          Errplane.api.post(Errplane.process_line(data))
-        end
+        data = generate_data(name, params)
+        udp ? Errplane.api.send(data) : Errplane.queue.push(data)
       end
+    end
+
+    def rollup(name, params = {})
+      Errplane.api.send generate_data(name, params), "t"
+    end
+
+    def count(name, params = {})
+      Errplane.api.send generate_data(name, params), "c"
+    end
+
+    def generate_data(name, params)
+      point = {:v => params[:value] || 1}
+      point[:t] = params[:timestamp] unless params[:timestamp].nil?
+
+      if context = params[:context]
+        point[:c] = params[:context].is_a?(String) ? params[:context] : params[:context].to_json
+      end
+
+      if dimensions = params[:dimensions]
+        point[:d] = Hash[params[:dimensions].map {|k,v| [k.to_s, v.to_s]}]
+      end
+
+      {
+        :n => name.gsub(/\s+/, "_"),
+        :p => [point]
+      }
     end
 
     def report_deployment(context = nil, async = false)
@@ -84,33 +102,33 @@ module Errplane
       yield_value
     end
 
-    def transmit_unless_ignorable(e, env = {})
-      transmit(e, env) unless ignorable_exception?(e)
+    def report_exception_unless_ignorable(e, env = {})
+      report_exception(e, env) unless ignorable_exception?(e)
     end
+    alias_method :transmit_unless_ignorable, :report_exception_unless_ignorable
 
-    def transmit(e, env = {})
+    def report_exception(e, env = {})
       begin
         env = errplane_request_data if env.empty? && defined? errplane_request_data
         exception_presenter = ExceptionPresenter.new(e, env)
         log :info, "Exception: #{exception_presenter.to_json[0..512]}..."
 
         Errplane.queue.push({
-          :name => exception_presenter.time_series_name,
-          :context => exception_presenter
+          :n => "exceptions",
+          :p => [{
+            :v => 1,
+            :c => exception_presenter.context.to_json,
+            :d => exception_presenter.dimensions
+          }]
         })
       rescue => e
         log :info, "[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}"
       end
     end
+    alias_method :transmit, :report_exception
 
     def current_timestamp
       Time.now.utc.to_i
-    end
-
-    def process_line(line)
-      data = "#{line[:name]} #{line[:value] || 1} #{line[:timestamp] || "now"}"
-      data = "#{data} #{Base64.strict_encode64(line[:context].to_json)}" if line[:context]
-      data
     end
 
     def ignorable_exception?(e)
