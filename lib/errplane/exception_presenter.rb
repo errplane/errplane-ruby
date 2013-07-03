@@ -31,8 +31,16 @@ module Errplane
       @environment_variables = ENV.to_hash || {}
     end
 
-    def to_json
-      payload = {
+    def dimensions
+      d = {
+        :class => "",
+        :method => "#{@controller}##{@action}",
+        :server => Socket.gethostname,
+      }
+    end
+
+    def context
+      c = {
         :time => Time.now.utc.to_i,
         :application_name => Errplane.configuration.application_name,
         :application_root => Errplane.configuration.application_root,
@@ -48,33 +56,14 @@ module Errplane
         :custom_data => @custom_data
       }
 
-      payload[:environment_variables] = @environment_variables.reject do |k,v|
+      c[:environment_variables] = @environment_variables.reject do |k,v|
         Errplane.configuration.environment_variable_filters.any? { |filter| k =~ filter }
       end
 
       Errplane.configuration.add_custom_exception_data(self)
 
-      payload[:request_data] = request_data if @controller || @action || !@params.blank?
-      payload[:hash] = calculate_hash
-      payload.to_json
-    end
-
-    def calculate_hash
-      if hash
-        hash
-      elsif Errplane.configuration.aggregated_exception_classes.include?(@exception.class.to_s)
-        Digest::SHA1.hexdigest(@exception.class.to_s)
-      else
-        Digest::SHA1.hexdigest(@exception.class.to_s + @backtrace.first.to_s)
-      end
-    end
-
-    def time_series_name
-      "exceptions/" + calculate_hash
-    end
-
-    def context
-      Base64.strict_encode64(to_json)
+      c[:request_data] = request_data if @controller || @action || !@params.blank?
+      c
     end
 
     def reporter

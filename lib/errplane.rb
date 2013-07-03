@@ -95,8 +95,10 @@ module Errplane
         log :info, "Exception: #{exception_presenter.to_json[0..512]}..."
 
         Errplane.queue.push({
-          :name => exception_presenter.time_series_name,
-          :context => exception_presenter
+          :n => "exceptions",
+          :p => exception_presenter.point,
+          :c => exception_presenter.context,
+          :d => exception_presenter.dimensions
         })
       rescue => e
         log :info, "[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}"

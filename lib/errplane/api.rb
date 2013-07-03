@@ -54,7 +54,7 @@ module Errplane
     end
 
     def initialize_secure_connection
-      connection = Net::HTTP.new("apiv2.errplane.com", 443)
+      connection = Net::HTTP.new("w.apiv3.errplane.com", 443)
       connection.use_ssl = true
       connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
       connection.read_timeout = READ_TIMEOUT
