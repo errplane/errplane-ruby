@@ -31,14 +31,6 @@ module Errplane
       @environment_variables = ENV.to_hash || {}
     end
 
-    def dimensions
-      d = {
-        :class => "",
-        :method => "#{@controller}##{@action}",
-        :server => Socket.gethostname,
-      }
-    end
-
     def context
       c = {
         :time => Time.now.utc.to_i,
@@ -48,11 +40,9 @@ module Errplane
         :framework_version => Errplane.configuration.framework_version,
         :message => @exception.message,
         :backtrace => @backtrace,
-        :exception_class => @exception.class.to_s,
         :language => "Ruby",
         :language_version => "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}",
         :reporter => reporter,
-        :hostname => Socket.gethostname,
         :custom_data => @custom_data
       }
 
@@ -64,6 +54,14 @@ module Errplane
 
       c[:request_data] = request_data if @controller || @action || !@params.blank?
       c
+    end
+
+    def dimensions
+      d = {
+        :class => @exception.class.to_s,
+        :method => "#{@controller}##{@action}",
+        :server => Socket.gethostname,
+      }
     end
 
     def reporter

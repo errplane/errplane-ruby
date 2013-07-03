@@ -96,9 +96,11 @@ module Errplane
 
         Errplane.queue.push({
           :n => "exceptions",
-          :p => exception_presenter.point,
-          :c => exception_presenter.context,
-          :d => exception_presenter.dimensions
+          :p => {
+            :v => 1,
+            :c => exception_presenter.context,
+            :d => exception_presenter.dimensions
+          }
         })
       rescue => e
         log :info, "[Errplane] Something went terribly wrong. Exception failed to take off! #{e.class}: #{e.message}"

@@ -64,21 +64,22 @@ module Errplane
           data = []
 
           while data.size < MAX_POST_LINES && !Errplane.queue.empty?
-            n = Errplane.queue.pop(true) rescue next;
-            log :debug, "Found data in the queue! (#{n[:name]})"
+            p = Errplane.queue.pop(true) rescue next;
+            log :debug, "Found data in the queue! (#{p[:n]})"
+            log :debug, p.inspect
 
             begin
-              if n[:name].split("|").any?{|x| x.length > MAX_TIME_SERIES_NAME_LENGTH}
-                log :error, "Time series name too long! Discarding data for: #{n[:name]}"
+              if p[:n].size > MAX_TIME_SERIES_NAME_LENGTH
+                log :error, "Time series name too long! Discarding data for: #{p[:n]}"
               else
-                data << Errplane.process_line(n)
+                data << p
               end
             rescue => e
-              log :info, "Instrumentation Error! #{e.inspect}"
+              log :info, "Instrumentation Error! #{e.inspect} #{e.backtrace.first}"
             end
           end
 
-          post_data(data.join("\n")) unless data.empty?
+          post_data(data) unless data.empty?
         end while Errplane.queue.length > MAX_POST_LINES
       end
     end
