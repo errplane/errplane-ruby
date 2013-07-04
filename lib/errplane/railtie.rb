@@ -137,23 +137,18 @@ module Errplane
             controller_name = payload[:controller]
             action_name = payload[:action]
 
-            Errplane.queue.push({
-              :name => "controllers/#{controller_name}##{action_name}",
-              :value => controller_runtime,
-              :timestamp => timestamp
-            })
-
-            Errplane.queue.push({
-              :name => "views/#{controller_name}##{action_name}",
-              :value => view_runtime,
-              :timestamp => timestamp
-            })
-
-            Errplane.queue.push({
-              :name => "db/#{controller_name}##{action_name}",
-              :value => db_runtime,
-              :timestamp => timestamp
-            })
+            Errplane.rollup "controllers",
+                            { :v => controller_runtime,
+                              :d => {:method => "#{controller_name}##{action_name}", :server => Socket.gethostname}
+                            }, true
+            Errplane.rollup "views",
+                            { :v => view_runtime,
+                              :d => {:method => "#{controller_name}##{action_name}", :server => Socket.gethostname}
+                            }, true
+            Errplane.rollup "db",
+                            { :v => db_runtime,
+                              :d => {:method => "#{controller_name}##{action_name}", :server => Socket.gethostname}
+                            }, true
           end
         end
       end

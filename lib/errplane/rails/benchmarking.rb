@@ -15,20 +15,18 @@ module Errplane
         ms = Benchmark.ms { perform_action_without_instrumentation }
         if Errplane.configuration.instrumentation_enabled
           Errplane.rollup "controllers",
-                          { :value => ms.ceil,
-                            :dimensions => {:method => "#{params[:controller]}##{params[:action]}", :server => Socket.gethostname}
-                          },
-                          true
+                          { :v => ms.ceil,
+                            :d => {:method => "#{params[:controller]}##{params[:action]}", :server => Socket.gethostname}
+                          }, true
       end
 
       def view_runtime_with_instrumentation
         runtime = view_runtime_without_instrumentation
         if Errplane.configuration.instrumentation_enabled
           Errplane.rollup "views",
-                          { :value => runtime.split.last.to_f.ceil,
-                            :dimensions => {:method => "#{params[:controller]}##{params[:action]}", :server => Socket.gethostname}
-                          },
-                          true
+                          { :v => runtime.split.last.to_f.ceil,
+                            :d => {:method => "#{params[:controller]}##{params[:action]}", :server => Socket.gethostname}
+                          }, true
         end
         runtime
       end
@@ -36,11 +34,10 @@ module Errplane
       def active_record_runtime_with_instrumentation
         runtime = active_record_runtime_without_instrumentation
         if Errplane.configuration.instrumentation_enabled
-          Errplane.report "db",
-                          { :value => runtime.split.last.to_f.ceil,
-                            :dimensions => {:method => "#{params[:controller]}##{params[:action]}", :server => Socket.gethostname}
-                          },
-                          true
+          Errplane.rollup "db",
+                          { :v => runtime.split.last.to_f.ceil,
+                            :d => {:method => "#{params[:controller]}##{params[:action]}", :server => Socket.gethostname}
+                          }, true
         end
         runtime
       end
