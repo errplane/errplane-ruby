@@ -61,7 +61,8 @@ module Errplane
         :Class => @exception.class.to_s,
         :class => @exception.class.to_s,
         :method => "#{@controller}##{@action}",
-        :server => Socket.gethostname
+        :server => Socket.gethostname,
+        :status => "open"
       }
     end
 
