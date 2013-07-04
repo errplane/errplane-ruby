@@ -1,4 +1,5 @@
 require 'benchmark'
+require "socket"
 
 module Errplane
   module Rails
@@ -13,14 +14,21 @@ module Errplane
       def perform_action_with_instrumentation
         ms = Benchmark.ms { perform_action_without_instrumentation }
         if Errplane.configuration.instrumentation_enabled
-          Errplane.report "controllers/#{params[:controller]}/#{params[:action]}", :value => ms.ceil
-        end
+          Errplane.rollup "controllers",
+                          { :value => ms.ceil,
+                            :dimensions => {:method => "#{params[:controller]}##{params[:action]}", :server => Socket.gethostname}
+                          },
+                          true
       end
 
       def view_runtime_with_instrumentation
         runtime = view_runtime_without_instrumentation
         if Errplane.configuration.instrumentation_enabled
-          Errplane.report "views", :value => runtime.split.last.to_f.ceil
+          Errplane.rollup "views",
+                          { :value => runtime.split.last.to_f.ceil,
+                            :dimensions => {:method => "#{params[:controller]}##{params[:action]}", :server => Socket.gethostname}
+                          },
+                          true
         end
         runtime
       end
@@ -28,7 +36,11 @@ module Errplane
       def active_record_runtime_with_instrumentation
         runtime = active_record_runtime_without_instrumentation
         if Errplane.configuration.instrumentation_enabled
-          Errplane.report "db", :value => runtime.split.last.to_f.ceil
+          Errplane.report "db",
+                          { :value => runtime.split.last.to_f.ceil,
+                            :dimensions => {:method => "#{params[:controller]}##{params[:action]}", :server => Socket.gethostname}
+                          },
+                          true
         end
         runtime
       end
