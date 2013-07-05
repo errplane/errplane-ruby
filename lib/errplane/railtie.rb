@@ -137,18 +137,10 @@ module Errplane
             controller_name = payload[:controller]
             action_name = payload[:action]
 
-            Errplane.rollup "controllers",
-                            { :v => controller_runtime,
-                              :d => {:method => "#{controller_name}##{action_name}", :server => Socket.gethostname}
-                            }, true
-            Errplane.rollup "views",
-                            { :v => view_runtime,
-                              :d => {:method => "#{controller_name}##{action_name}", :server => Socket.gethostname}
-                            }, true
-            Errplane.rollup "db",
-                            { :v => db_runtime,
-                              :d => {:method => "#{controller_name}##{action_name}", :server => Socket.gethostname}
-                            }, true
+            dimensions = {:method => "#{controller_name}##{action_name}", :server => Socket.gethostname}
+            Errplane.rollup "controllers", :value => controller_runtime, :dimensions => dimensions
+            Errplane.rollup "views", :value => view_runtime, :dimensions => dimensions
+            Errplane.rollup "db", :value => db_runtime, :dimensions => dimensions
           end
         end
       end

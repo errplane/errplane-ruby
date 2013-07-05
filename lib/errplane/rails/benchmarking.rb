@@ -14,19 +14,13 @@ module Errplane
       def perform_action_with_instrumentation
         ms = Benchmark.ms { perform_action_without_instrumentation }
         if Errplane.configuration.instrumentation_enabled
-          Errplane.rollup "controllers",
-                          { :v => ms.ceil,
-                            :d => {:method => "#{params[:controller]}##{params[:action]}", :server => Socket.gethostname}
-                          }, true
+          Errplane.rollup "controllers", :value => ms.ceil, :dimensions => dimensions
       end
 
       def view_runtime_with_instrumentation
         runtime = view_runtime_without_instrumentation
         if Errplane.configuration.instrumentation_enabled
-          Errplane.rollup "views",
-                          { :v => runtime.split.last.to_f.ceil,
-                            :d => {:method => "#{params[:controller]}##{params[:action]}", :server => Socket.gethostname}
-                          }, true
+          Errplane.rollup "views", :value => runtime.split.last.to_f.ceil, :dimensions => dimensions
         end
         runtime
       end
@@ -34,12 +28,13 @@ module Errplane
       def active_record_runtime_with_instrumentation
         runtime = active_record_runtime_without_instrumentation
         if Errplane.configuration.instrumentation_enabled
-          Errplane.rollup "db",
-                          { :v => runtime.split.last.to_f.ceil,
-                            :d => {:method => "#{params[:controller]}##{params[:action]}", :server => Socket.gethostname}
-                          }, true
+          Errplane.rollup "db", :value => runtime.split.last.to_f.ceil, :dimensions => dimensions
         end
         runtime
+      end
+
+      def dimensions
+        { :method => "#{params[:controller]}##{params[:action]}", :server => Socket.gethostname }
       end
     end
   end

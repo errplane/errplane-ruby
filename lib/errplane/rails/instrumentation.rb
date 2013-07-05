@@ -5,7 +5,8 @@ module Errplane
         start = Time.now
         yield
         elapsed = ((Time.now - start) * 1000).ceil
-        Errplane.report("instrumentation/#{controller_name}##{action_name}", :value => elapsed)
+        dimensions = { :method => "#{controller_name}##{action_name}", :server => Socket.gethostname }
+        Errplane.rollup "instrumentation", :value => elapsed, :dimensions => dimensions
       end
 
       def self.included(base)
