@@ -45,7 +45,10 @@ module Errplane
       :environment_variable_filters => [
         /password/i,
         /key/i,
-        /secret/i
+        /secret/i,
+        /ps1/i,
+        /rvm_.*_clr/i,
+        /color/i
       ],
       :backtrace_filters => [
         lambda { |line| line.gsub(/^\.\//, "") },
