@@ -28,7 +28,7 @@ module Errplane
       @request_url = params[:request_url]
       @user_agent = params[:user_agent]
       @custom_data = params[:custom_data] || {}
-      @environment_variables = {} # ENV.to_hash || {}
+      @environment_variables = ENV.to_hash || {}
     end
 
     def context
