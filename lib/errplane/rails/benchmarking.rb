@@ -15,6 +15,7 @@ module Errplane
         ms = Benchmark.ms { perform_action_without_instrumentation }
         if Errplane.configuration.instrumentation_enabled
           Errplane.rollup "controllers", :value => ms.ceil, :dimensions => dimensions
+        end
       end
 
       def view_runtime_with_instrumentation
