@@ -27,6 +27,7 @@ module Errplane
       @action = params[:action]
       @request_url = params[:request_url]
       @user_agent = params[:user_agent]
+      @referer = params[:referer]
       @custom_data = params[:custom_data] || {}
       @environment_variables = ENV.to_hash || {}
     end
@@ -81,6 +82,7 @@ module Errplane
         :controller => @controller,
         :action => @action,
         :request_url => @request_url,
+        :referer => @referer,
         :user_agent => @user_agent
       }
     end

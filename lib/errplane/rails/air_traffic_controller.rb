@@ -12,7 +12,8 @@ module Errplane
           :controller => params[:controller],
           :action => params[:action],
           :request_url => errplane_request_url,
-          :user_agent => request.env["HTTP_USER_AGENT"]
+          :user_agent => request.env["HTTP_USER_AGENT"],
+          :referer => request.referer
         }
       end
 
