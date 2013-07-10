@@ -16,7 +16,6 @@ module Errplane
           log :debug, "Current environment is ignored, skipping POST."
           return false
         else
-          log :debug, "POSTing data:\n#{data}"
           begin
             Errplane.api.post(data)
           rescue => e

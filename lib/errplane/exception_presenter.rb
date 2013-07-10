@@ -22,7 +22,7 @@ module Errplane
       @exception = e.is_a?(String) ? Exception.new(e) : e
       @backtrace = Errplane::Backtrace.new(@exception.backtrace).to_a || []
       @params = params[:params]
-      @session_data = params[:session_data]
+      @session_data = params[:session_data] || {}
       @controller = params[:controller]
       @action = params[:action]
       @request_url = params[:request_url]

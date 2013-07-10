@@ -73,8 +73,8 @@ module Errplane
       }
     end
 
-    def report_deployment(context = nil, async = false)
-      report("deployments", {:context => context}, async)
+    def report_deployment(context = nil, udp = false)
+      report("deployments", {:context => context}, udp)
     end
 
     def heartbeat(name, interval)

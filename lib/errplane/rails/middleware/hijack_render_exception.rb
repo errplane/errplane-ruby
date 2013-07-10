@@ -10,7 +10,7 @@ module Errplane
           controller = env["action_controller.instance"]
           request_data = controller.try(:errplane_request_data) || {}
           unless Errplane.configuration.ignore_user_agent?(request_data[:user_agent])
-            Errplane.transmit_unless_ignorable(e, request_data)
+            Errplane.report_exception_unless_ignorable(e, request_data)
           end
           render_exception_without_errplane(env, e)
         end

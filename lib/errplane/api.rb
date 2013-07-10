@@ -27,6 +27,7 @@ module Errplane
       log :debug, "POSTing to #{url}"
 
       response = begin
+                   log :debug, "POSTing data:\n#{data.to_json}"
                    https.post(url, data.to_json)
                  rescue *HTTP_ERRORS => e
                    log :error, "HTTP error contacting API! #{e.class}: #{e.message}"

@@ -22,7 +22,7 @@ module Errplane
           request_data = errplane_request_data || {}
 
           unless Errplane.configuration.ignore_user_agent?(request_data[:user_agent])
-            Errplane.transmit_unless_ignorable(e, request_data)
+            Errplane.report_exception_unless_ignorable(e, request_data)
           end
         end
       end
