@@ -129,7 +129,7 @@ module Errplane
 
       if defined?(ActiveSupport::Notifications)
         ActiveSupport::Notifications.subscribe "process_action.action_controller" do |name, start, finish, id, payload|
-          if Errplane.configuration.instrumentation_enabled?
+          if Errplane.configuration.instrumentation_enabled  && ! Errplane.configuration.ignore_current_environment?
             timestamp = finish.utc.to_i
             controller_runtime = ((finish - start)*1000).ceil
             view_runtime = (payload[:view_runtime] || 0).ceil
@@ -138,9 +138,9 @@ module Errplane
             action_name = payload[:action]
 
             dimensions = {:method => "#{controller_name}##{action_name}", :server => Socket.gethostname}
-            Errplane.rollup "controllers", :value => controller_runtime, :dimensions => dimensions
-            Errplane.rollup "views", :value => view_runtime, :dimensions => dimensions
-            Errplane.rollup "db", :value => db_runtime, :dimensions => dimensions
+            Errplane.aggregate "controllers", :value => controller_runtime, :dimensions => dimensions
+            Errplane.aggregate "views", :value => view_runtime, :dimensions => dimensions
+            Errplane.aggregate "db", :value => db_runtime, :dimensions => dimensions
           end
         end
       end

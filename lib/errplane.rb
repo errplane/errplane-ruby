@@ -47,11 +47,11 @@ module Errplane
       end
     end
 
-    def rollup(name, params = {})
+    def aggregate(name, params = {})
       Errplane.api.send generate_data(name, params), "t"
     end
 
-    def count(name, params = {})
+    def sum(name, params = {})
       Errplane.api.send generate_data(name, params), "c"
     end
 
