@@ -77,13 +77,13 @@ module Errplane
       report("deployments", {:context => context}, udp)
     end
 
-    def heartbeat(name, interval)
+    def heartbeat(name, interval, params)
       log :debug, "Starting heartbeat '#{name}' on a #{interval} second interval."
       Thread.new do
         while true do
           log :debug, "Sleeping '#{name}' for #{interval} seconds."
           sleep(interval)
-          report(name, :timestamp => "now")
+          report(name, :dimensions => params[:dimensions], :context => params[:context])
         end
       end
     end
