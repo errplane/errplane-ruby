@@ -16,9 +16,8 @@ module Errplane
             config.ignored_environments = []
           end
 
-          timestamp = Time.now.utc.to_i
-          data = "tests/#{timestamp} 1 #{timestamp}"
-          if Errplane::Worker.post_data(data)
+          data = [{:n => "tests", :p => [{:v => 1}]}]
+          if Errplane.api.post(data)
             puts "Test data sent successfully!"
           else
             puts "Test failed! Check your network connection and try again."
