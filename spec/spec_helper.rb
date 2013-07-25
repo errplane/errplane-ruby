@@ -30,7 +30,6 @@ FakeWeb.allow_net_connect = false
 
 if defined? Rails
   puts "Loading Rails v#{Rails.version}..."
-  puts Rails.version.to_f
 
   if Rails.version.to_f < 3.0
     Gem::Deprecate.skip = true
