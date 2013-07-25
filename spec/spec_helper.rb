@@ -30,6 +30,7 @@ FakeWeb.allow_net_connect = false
 
 if defined? Rails
   puts "Loading Rails v#{Rails.version}..."
+  puts Rails.version.to_f
 
   if Rails.version.to_f < 3.0
     Gem::Deprecate.skip = true
@@ -37,8 +38,11 @@ if defined? Rails
     RAILS_ROOT = "#{File.dirname(__FILE__)}/support/rails2"
     require "#{RAILS_ROOT}/config/environment"
     require "spec/rails"
-  else
+  elsif Rails.version.to_f < 4.0
     require "support/rails3/app"
+    require "rspec/rails"
+  else
+    require "support/rails4/app"
     require "rspec/rails"
   end
 end
