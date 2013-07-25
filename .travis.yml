@@ -19,6 +19,8 @@ matrix:
       gemfile: gemfiles/Gemfile.rails-4.0.x
     - rvm: jruby-18mode
       gemfile: gemfiles/Gemfile.rails-4.0.x
+before_install:
+  - gem update --system 1.8.25
 notifications:
   email:
     - pilots@errplane.com
