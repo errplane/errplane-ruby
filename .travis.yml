@@ -11,9 +11,17 @@ gemfile:
   - gemfiles/Gemfile.rails-3.1.x
   - gemfiles/Gemfile.rails-3.0.x
   - gemfiles/Gemfile.rails-2.3.x
+matrix:
+  exclude:
+    - rvm: 1.8.7
+      gemfile: gemfiles/Gemfile.rails-4.0.x
+    - rvm: ree
+      gemfile: gemfiles/Gemfile.rails-4.0.x
+    - rvm: jruby-18mode
+      gemfile: gemfiles/Gemfile.rails-4.0.x
 notifications:
   email:
-    - mechanics@errplane.com
+    - pilots@errplane.com
   on_success: change
   on_failure: always
 script: bundle exec rake spec
