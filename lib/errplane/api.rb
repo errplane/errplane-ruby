@@ -50,8 +50,6 @@ module Errplane
     end
 
     def send(data, operator="r")
-      udp = UDPSocket.new
-
       packet = {
         :d => Errplane.configuration.database_name,
         :a => Errplane.configuration.api_key.to_s,
@@ -61,10 +59,18 @@ module Errplane
 
       log :debug, "Sending UDP Packet: #{packet.to_json}"
 
-      udp.send packet.to_json, 0, UDP_HOST, UDP_PORT
+      begin
+        udp_socket.send packet.to_json, 0, UDP_HOST, UDP_PORT
+      rescue => e
+        log :error, "Failed to send data via UDP. Check your network settings and available file descriptors. #{e.class}: #{e.message}"
+      end
     end
 
     private
+    def udp_socket
+      Thread.current[:errplane_udp_socket] ||= UDPSocket.new
+    end
+
     def url
       "/databases/" \
       + Errplane.configuration.database_name \
