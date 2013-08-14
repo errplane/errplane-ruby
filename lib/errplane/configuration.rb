@@ -1,8 +1,10 @@
 module Errplane
   class Configuration
     attr_accessor :api_key
-    attr_accessor :api_host
-    attr_accessor :api_host_port
+    attr_accessor :api_udp_host
+    attr_accessor :api_udp_port
+    attr_accessor :api_http_read_host
+    attr_accessor :api_http_write_host
     attr_accessor :app_host
     attr_accessor :application_id
     attr_accessor :application_name
@@ -34,10 +36,13 @@ module Errplane
     attr_accessor :queue_maximum_post
 
     DEFAULTS = {
-      :api_host => "apiv2.errplane.com",
       :app_host => "app.errplane.com",
+      :api_udp_host => "udp.apiv3.errplane.com",
+      :api_udp_port => 8126,
+      :api_http_read_host => "r.apiv3.errplane.com",
+      :api_http_write_host => "w.apiv3.errplane.com",
       :ignored_exceptions => %w{ActiveRecord::RecordNotFound
-                              ActionController::RoutingError},
+                                ActionController::RoutingError},
       :ignored_exception_messages => [],
       :ignored_reports => [],
       :ignored_environments => %w{test cucumber selenium},
@@ -66,8 +71,10 @@ module Errplane
     }
 
     def initialize
-      @api_host = DEFAULTS[:api_host]
-      @api_host_port = DEFAULTS[:api_host_port]
+      @api_udp_host = DEFAULTS[:api_udp_host]
+      @api_udp_port = DEFAULTS[:api_udp_port]
+      @api_http_read_host = DEFAULTS[:api_http_read_host]
+      @api_http_write_host = DEFAULTS[:api_http_write_host]
       @app_host = DEFAULTS[:app_host]
       @ignored_exceptions = DEFAULTS[:ignored_exceptions].dup
       @ignored_exception_messages = DEFAULTS[:ignored_exception_messages].dup

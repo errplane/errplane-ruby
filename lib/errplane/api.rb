@@ -4,10 +4,6 @@ module Errplane
 
     attr_reader :last_response
 
-    HTTPS_HOST = "w.apiv3.errplane.com"
-    UDP_HOST = "udp.apiv3.errplane.com"
-    UDP_PORT = 8126
-
     POST_RETRIES = 5
     READ_TIMEOUT = 3
     OPEN_TIMEOUT = 3
@@ -60,7 +56,7 @@ module Errplane
       log :debug, "Sending UDP Packet: #{packet.to_json}"
 
       begin
-        udp_socket.send packet.to_json, 0, UDP_HOST, UDP_PORT
+        udp_socket.send packet.to_json, 0, Errplane.configuration.api_udp_host, Errplane.configuration.api_udp_port
       rescue => e
         log :error, "Failed to send data via UDP. Check your network settings and available file descriptors. #{e.class}: #{e.message}"
       end
@@ -79,7 +75,7 @@ module Errplane
     end
 
     def initialize_secure_connection
-      connection = Net::HTTP.new(HTTPS_HOST, 443)
+      connection = Net::HTTP.new(Errplane.configuration.api_http_write_host, 443)
       connection.use_ssl = true
       connection.verify_mode = OpenSSL::SSL::VERIFY_NONE
       connection.read_timeout = READ_TIMEOUT
