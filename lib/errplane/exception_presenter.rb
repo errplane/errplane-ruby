@@ -30,6 +30,7 @@ module Errplane
       @referer = params[:referer]
       @custom_data = params[:custom_data] || {}
       @environment_variables = ENV.to_hash || {}
+      @dimensions = {}
     end
 
     def context
@@ -64,7 +65,7 @@ module Errplane
         :method => "#{@controller}##{@action}",
         :server => Socket.gethostname,
         :status => "open"
-      }
+      }.merge(@dimensions)
     end
 
     def reporter
