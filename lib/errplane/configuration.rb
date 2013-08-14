@@ -111,8 +111,8 @@ module Errplane
       @custom_exception_data_handler = block
     end
 
-    def add_custom_exception_data(black_box)
-      @custom_exception_data_handler.call(black_box) if @custom_exception_data_handler
+    def add_custom_exception_data(exception_presenter)
+      @custom_exception_data_handler.call(exception_presenter) if @custom_exception_data_handler
     end
 
     def database_name
