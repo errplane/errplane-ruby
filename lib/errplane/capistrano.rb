@@ -13,7 +13,22 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       puts "Notifying Errplane of the deployment.."
       framework_env = fetch(:errplane_env, fetch(:rails_env, 'production'))
-      load File.join(Dir.pwd, "config/initializers/errplane.rb")
+
+      unless defined?(Rails)
+        class Rails
+          @env = "production";
+          def self.env; return self; end
+          def self.env=(env); @env = env; end
+          def self.to_s; @env; end
+          def self.method_missing(m, *args, &block); return m.to_s == "#{@env}?"; end
+        end
+        Rails.env = framework_env
+      end
+      begin
+        load File.join(Dir.pwd, "config/initializers/errplane.rb")
+      rescue
+        puts "Couldn't find default initializer for Errplane, continuing anyhow."
+      end
 
       Errplane.configuration.logger = Logger.new("/dev/null")
       Errplane.configuration.environment = framework_env
