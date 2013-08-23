@@ -13,7 +13,8 @@ module Errplane
           :action => params[:action],
           :request_url => errplane_request_url,
           :user_agent => request.env["HTTP_USER_AGENT"],
-          :referer => request.referer
+          :referer => request.referer,
+          :current_user => current_user
         }
       end
 

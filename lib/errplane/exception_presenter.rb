@@ -9,6 +9,7 @@ module Errplane
     attr_reader :backtrace
     attr_reader :params
     attr_reader :session_data
+    attr_reader :current_user
     attr_reader :controller
     attr_reader :action
     attr_reader :request_url
@@ -23,6 +24,7 @@ module Errplane
       @backtrace = Errplane::Backtrace.new(@exception.backtrace).to_a || []
       @params = params[:params]
       @session_data = params[:session_data] || {}
+      @current_user = params[:current_user]
       @controller = params[:controller]
       @action = params[:action]
       @request_url = params[:request_url]
