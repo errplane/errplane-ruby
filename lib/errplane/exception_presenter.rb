@@ -62,7 +62,6 @@ module Errplane
 
     def dimensions
       d = {
-        :Class => @exception.class.to_s,
         :class => @exception.class.to_s,
         :method => "#{@controller}##{@action}",
         :server => Socket.gethostname,
