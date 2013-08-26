@@ -7,11 +7,11 @@ describe "exception handling" do
       config.instrumentation_enabled = false
     end
 
-    FakeWeb.last_request = nil
-    FakeWeb.clean_registry
-    @request_path = "/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/test?api_key=f123-e456-d789c012"
-    @request_url = "http://api.errplane.com#{@request_path}"
-    FakeWeb.register_uri(:post, @request_url, :body => "", :status => ["200", "OK"])
+    # FakeWeb.last_request = nil
+    # FakeWeb.clean_registry
+    # @request_path = "/api/v1/applications/#{Errplane.configuration.application_id}/exceptions/test?api_key=f123-e456-d789c012"
+    # @request_url = "http://api.errplane.com#{@request_path}"
+    # FakeWeb.register_uri(:post, @request_url, :body => "", :status => ["200", "OK"])
 
     Errplane.queue.clear
   end
