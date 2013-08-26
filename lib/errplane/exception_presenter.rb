@@ -21,7 +21,7 @@ module Errplane
       e = e.original_exception if e.respond_to?(:original_exception)
 
       @exception = e.is_a?(String) ? Exception.new(e) : e
-      @backtrace = Errplane::Backtrace.new(@exception.backtrace).to_a || []
+      @backtrace = Errplane::Backtrace.new(@exception.backtrace)
       @params = params[:params]
       @session_data = params[:session_data] || {}
       @current_user = params[:current_user]
@@ -43,7 +43,7 @@ module Errplane
         :framework => Errplane.configuration.framework,
         :framework_version => Errplane.configuration.framework_version,
         :message => @exception.message,
-        :backtrace => @backtrace,
+        :backtrace => @backtrace.to_a,
         :language => "Ruby",
         :language_version => "#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}",
         :reporter => reporter,
@@ -64,6 +64,7 @@ module Errplane
       d = {
         :class => @exception.class.to_s,
         :method => "#{@controller}##{@action}",
+        :filename => File.basename(@backtrace.lines.first.try(:file)),
         :server => Socket.gethostname,
         :status => "open"
       }.merge(@dimensions)
