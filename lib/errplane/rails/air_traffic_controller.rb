@@ -2,12 +2,17 @@ module Errplane
   module Rails
     module AirTrafficController
       def errplane_request_data
-        use_params = params.to_hash
+        unfiltered_params = params.to_hash
         if respond_to?(:filter_parameters)
-          use_params = filter_parameters(use_params)
+          filtered_params = filter_parameters(unfiltered_params)
+        elsif defined? request.filtered_parameters
+          filtered_params = request.filtered_parameters
+        else
+          filtered_params = unfiltered_params.except(:password, :password_confirmation)
         end
+
         {
-          :params => use_params,
+          :params => filtered_parameters,
           :session_data => errplane_session_data,
           :controller => params[:controller],
           :action => params[:action],
