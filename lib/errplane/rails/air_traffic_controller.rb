@@ -19,7 +19,7 @@ module Errplane
           :request_url => errplane_request_url,
           :user_agent => request.env["HTTP_USER_AGENT"],
           :referer => request.referer,
-          :current_user => current_user
+          :current_user => (current_user rescue nil)
         }
       end
 
