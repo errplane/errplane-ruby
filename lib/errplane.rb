@@ -55,8 +55,18 @@ module Errplane
       Errplane.api.send generate_data(name, params), "c"
     end
 
+    def destringify_value(value)
+      if value.is_a?(String)
+        return value.to_f if value =~ /\./
+        return value.to_i
+      else
+        return value
+      end
+    end
+
     def generate_data(name, params)
-      point = {:v => params[:value] || 1}
+      value = destringify_value(params[:value])
+      point = {:v => value || 1}
       point[:t] = params[:timestamp] unless params[:timestamp].nil?
 
       if context = params[:context]
