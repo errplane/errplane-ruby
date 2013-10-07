@@ -18,6 +18,7 @@ module Errplane
           :action => params[:action],
           :request_url => errplane_request_url,
           :user_agent => request.env["HTTP_USER_AGENT"],
+          :remote_ip => request.remote_ip,
           :referer => request.referer,
           :current_user => (current_user rescue nil)
         }

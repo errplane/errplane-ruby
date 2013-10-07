@@ -13,6 +13,8 @@ module Errplane
     attr_reader :controller
     attr_reader :action
     attr_reader :request_url
+    attr_reader :referer
+    attr_reader :remote_ip
     attr_reader :user_agent
     attr_reader :custom_data
 
@@ -30,6 +32,7 @@ module Errplane
       @request_url = params[:request_url]
       @user_agent = params[:user_agent]
       @referer = params[:referer]
+      @remote_ip = params[:remote_ip]
       @custom_data = params[:custom_data] || {}
       @environment_variables = ENV.to_hash || {}
       @dimensions = {}
@@ -86,6 +89,7 @@ module Errplane
         :action => @action,
         :request_url => @request_url,
         :referer => @referer,
+        :remote_ip => @remote_ip,
         :user_agent => @user_agent
       }
     end
